@@ -1,0 +1,35 @@
+{
+  "name": "chrischall",
+  "owner": {
+    "name": "Chris Chall",
+    "email": "chris.c.hall@gmail.com"
+  },
+  "metadata": {
+    "description": "Jobber Client Hub tools for Claude Code",
+    "version": "0.0.0"
+  },
+  "plugins": [
+    {
+      "name": "jobber",
+      "displayName": "Jobber Client Hub",
+      "source": "./",
+      "description": "Read the Jobber Client Hub your home-service providers share with you — appointments, invoices, quotes and requests — via MCP",
+      "version": "0.0.0",
+      "author": {
+        "name": "Chris Chall"
+      },
+      "homepage": "https://github.com/chrischall/jobber-mcp",
+      "repository": "https://github.com/chrischall/jobber-mcp",
+      "license": "MIT",
+      "keywords": [
+        "jobber",
+        "client-hub",
+        "invoices",
+        "appointments",
+        "home-services",
+        "mcp"
+      ],
+      "category": "productivity"
+    }
+  ]
+}

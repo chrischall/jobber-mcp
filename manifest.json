@@ -1,0 +1,90 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/dxt/main/dist/mcpb-manifest.schema.json",
+  "manifest_version": "0.3",
+  "name": "jobber-mcp",
+  "display_name": "Jobber Client Hub",
+  "version": "0.0.0",
+  "description": "Read the Jobber Client Hub your home-service providers share with you — appointments, invoices, quotes and requests",
+  "author": {
+    "name": "Chris Chall",
+    "email": "chris.c.hall@gmail.com",
+    "url": "https://github.com/chrischall"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chrischall/jobber-mcp"
+  },
+  "homepage": "https://github.com/chrischall/jobber-mcp",
+  "support": "https://github.com/chrischall/jobber-mcp/issues",
+  "license": "MIT",
+  "keywords": [
+    "jobber",
+    "client-hub",
+    "invoices",
+    "appointments",
+    "quotes",
+    "home-services"
+  ],
+  "server": {
+    "type": "node",
+    "entry_point": "dist/bundle.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/dist/bundle.js"
+      ],
+      "env": {
+        "JOBBER_HUB_ID": "${user_config.hub_id}"
+      }
+    }
+  },
+  "user_config": {
+    "hub_id": {
+      "type": "string",
+      "title": "Client Hub ID",
+      "description": "The UUID from your hub URL: clienthub.getjobber.com/client_hubs/<UUID>/ — find it in any email your provider sent you. Treat it like a password.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "jobber_list_appointments",
+      "description": "Scheduled visits from a provider — today, upcoming and past"
+    },
+    {
+      "name": "jobber_list_invoices",
+      "description": "Invoices a provider has sent, with paid/unpaid state"
+    },
+    {
+      "name": "jobber_list_quotes",
+      "description": "Quotes a provider has sent"
+    },
+    {
+      "name": "jobber_list_work_requests",
+      "description": "Work requests you have raised with a provider"
+    },
+    {
+      "name": "jobber_read_page",
+      "description": "Readable text of any Client Hub page, including detail pages"
+    },
+    {
+      "name": "jobber_list_hubs",
+      "description": "The configured Client Hubs and which one is the default"
+    },
+    {
+      "name": "jobber_healthcheck",
+      "description": "Verify the fetchproxy bridge and the hub are reachable"
+    }
+  ],
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
+    "runtimes": {
+      "node": ">=22.0.0"
+    }
+  }
+}

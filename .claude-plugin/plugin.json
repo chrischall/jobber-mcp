@@ -1,0 +1,22 @@
+{
+  "name": "jobber",
+  "displayName": "Jobber Client Hub",
+  "version": "0.0.0",
+  "description": "Read the Jobber Client Hub your home-service providers share with you — appointments, invoices, quotes and requests — via MCP",
+  "author": {
+    "name": "Chris Chall"
+  },
+  "homepage": "https://github.com/chrischall/jobber-mcp",
+  "repository": "https://github.com/chrischall/jobber-mcp",
+  "license": "MIT",
+  "keywords": [
+    "jobber",
+    "client-hub",
+    "invoices",
+    "appointments",
+    "home-services",
+    "mcp"
+  ],
+  "skills": "./skills/",
+  "mcp": "./.mcp.json"
+}
