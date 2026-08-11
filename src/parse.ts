@@ -145,8 +145,12 @@ export function parseCards(html: string): CardRecord[] {
       section = stripTags(t[1]) || null;
       continue;
     }
-    const attrs = t[2] ?? '';
-    const body = t[3] ?? '';
+    // t[1] was undefined, so the <a> alternative matched and both of ITS
+    // groups participated. Asserted rather than defaulted: `?? ''` would be a
+    // branch no input can take, and an uncoverable branch is indistinguishable
+    // from an untested one.
+    const attrs = t[2] as string;
+    const body = t[3] as string;
     const href = attrs.match(/href\s*=\s*"([^"]*)"/)?.[1] ?? null;
 
     records.push({
@@ -158,7 +162,9 @@ export function parseCards(html: string): CardRecord[] {
       // `.shrink.columns` siblings match the selector too and strip to '',
       // which is why empties are dropped rather than kept as blanks.
       details: [...body.matchAll(/<div[^>]*class="[^"]*\bcolumns\b[^"]*"[^>]*>([\s\S]*?)<\/div>/g)]
-        .map((m) => stripTags(m[1] ?? ''))
+        // Group 1 always participates on a match — asserted, not defaulted,
+        // for the same reason as `attrs`/`body` above.
+        .map((m) => stripTags(m[1] as string))
         .filter(Boolean),
       url: href,
     });
