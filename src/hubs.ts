@@ -10,7 +10,7 @@
  * so it is read from the environment, never logged, and never echoed back in a
  * tool result.
  */
-import { McpToolError, readEnvVar } from '@chrischall/mcp-utils';
+import { McpToolError, messageOf, readEnvVar } from '@chrischall/mcp-utils';
 
 export const CLIENT_HUB_ORIGIN = 'https://clienthub.getjobber.com';
 
@@ -37,7 +37,9 @@ export class HubRegistry {
     try {
       this.hubs = loadHubs(env);
     } catch (err) {
-      this.configError = err instanceof Error ? err.message : String(err);
+      // messageOf handles the non-Error case, so this file carries no branch
+      // that no input can reach (and healthcheck.ts already uses it).
+      this.configError = messageOf(err);
     }
   }
 
