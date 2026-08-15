@@ -52,6 +52,11 @@ describe('JobberFetchproxyTransport — bridge declaration', () => {
   it('declares the fleet-shared concentrator port, not a unique one', () => {
     // A "unique" port is the classic mistake: the extension dials 37149 and
     // a server elsewhere would never be found.
+    //
+    // Cleared explicitly: the default comes from `readPortEnv('JOBBER_WS_PORT', …)`,
+    // so a developer with that set in their shell would see this pass or fail
+    // on their environment rather than on the code.
+    vi.stubEnv('JOBBER_WS_PORT', '');
     expect(declaredOpts()['port']).toBe(37_149);
   });
 
