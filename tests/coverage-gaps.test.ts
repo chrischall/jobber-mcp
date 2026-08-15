@@ -184,9 +184,10 @@ describe('defaults that the injected-dependency tests never take', () => {
     expect(reg.list()).toEqual([{ label: 'home', isDefault: true }]);
   });
 
-  it('surfaces a non-Error config failure as a string', () => {
-    // loadHubs throws Errors today; the String(err) arm is the guard against a
-    // future throw of something else taking the server down with no message.
+  it('reports malformed JOBBER_HUBS as a JSON problem, not a missing hub', () => {
+    // Covers the `JSON.parse` catch in loadHubs. The message has to name the
+    // real fault: "no hub configured" would send someone off editing config
+    // that is already there, just unparseable.
     const reg = new HubRegistry({ JOBBER_HUBS: '{not json' } as NodeJS.ProcessEnv);
     expect(() => reg.resolve()).toThrow(/not valid JSON/);
   });
