@@ -19,6 +19,7 @@ env:
       The UUID from your hub URL: clienthub.getjobber.com/client_hubs/<UUID>/ —
       find it in any email your provider sent you. Treat it like a password.
   - name: JOBBER_HUBS
+    secret: true
     required: false
     help: >-
       A JSON array of Client Hubs for several providers at once, each with a
