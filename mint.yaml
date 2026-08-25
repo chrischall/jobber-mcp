@@ -1,0 +1,50 @@
+version: 1
+name: Jobber Client Hub
+slug: jobber
+summary: >-
+  Read the Jobber Client Hub your home-service providers share with you —
+  appointments, invoices, quotes and requests
+#
+# Hosting note (a comment, not user-facing summary text): this is a
+# BROWSER-BRIDGE MCP — it reaches its site through the user's signed-in
+# tab via the fetchproxy bridge. A bridged registration also needs runtime
+# `fly-shared`, `bridge: true` and a `bridgePortEnv`, which are registration
+# fields this manifest has no schema for (set them over the control API).
+# `state.dataDir` below is required for `bridge`.
+env:
+  - name: JOBBER_HUB_ID
+    secret: true
+    required: false
+    help: >-
+      The UUID from your hub URL: clienthub.getjobber.com/client_hubs/<UUID>/ —
+      find it in any email your provider sent you. Treat it like a password.
+  - name: JOBBER_HUBS
+    required: false
+    help: >-
+      A JSON array of Client Hubs for several providers at once, each with a
+      label and hub UUID. Use JOBBER_HUB_ID instead for a single hub.
+  - name: JOBBER_HUB_LABEL
+    required: false
+    help: >-
+      Label for the single hub given by JOBBER_HUB_ID (defaults to "default").
+      Only meaningful alongside JOBBER_HUB_ID.
+  - name: JOBBER_WS_PORT
+    required: false
+    help: >-
+      Concentrator port for the fetchproxy browser bridge (defaults to the
+      fleet-shared 37149). The runner injects a per-registration port for a
+      hosted bridged child, so this is the name to give bridgePortEnv at
+      registration.
+state:
+  dataDir: true
+  reason: >-
+    The fetchproxy identity lives at $HOME/.fetchproxy/identity/<name>.json
+    and the pair code derives from it. Without a persistent $HOME every cold
+    start mints a fresh identity and re-prompts pairing in the browser; the
+    API refuses bridge without it.
+egress:
+  allow:
+    # Only hosts the SERVER process actually fetches. Hosts that appear
+    # solely in a URL this server BUILDS and returns are excluded.
+    - clienthub.getjobber.com
+    - getjobber.com
