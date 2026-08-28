@@ -44,8 +44,14 @@ state:
     start mints a fresh identity and re-prompts pairing in the browser; the
     API refuses bridge without it.
 egress:
-  allow:
-    # Only hosts the SERVER process actually fetches. Hosts that appear
-    # solely in a URL this server BUILDS and returns are excluded.
-    - clienthub.getjobber.com
-    - getjobber.com
+  # Only hosts the SERVER process actually fetches. Hosts that appear
+  # solely in a URL this server BUILDS and returns are excluded.
+  #
+  # Empty on purpose. This MCP has ONE mode, the browser bridge: every hub
+  # page is fetched by the user's signed-in tab (src/transport-fetchproxy.ts),
+  # and the process itself opens only the loopback concentrator port the
+  # runner's agent connects to. `clienthub.getjobber.com` is dialled by the
+  # tab, never by this process (src/hubs.ts only BUILDS those URLs), and there
+  # is no direct / bootstrap / anonymous path — the README explains why the
+  # Cloudflare challenge rules one out. Nothing is discovered at runtime.
+  allow: []
