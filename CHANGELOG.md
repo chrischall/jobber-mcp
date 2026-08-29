@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/chrischall/jobber-mcp/compare/v0.1.1...v0.2.0) (2026-08-29)
+
+
+### Features
+
+* **deps:** take @fetchproxy/server 2.2.0 so the concentrator can bind its sandbox address ([#17](https://github.com/chrischall/jobber-mcp/issues/17)) ([9ac5963](https://github.com/chrischall/jobber-mcp/commit/9ac596388388283505ffd4fc7081c6e2e427e6c6))
+
 ## [0.1.1](https://github.com/chrischall/jobber-mcp/compare/v0.1.0...v0.1.1) (2026-08-28)
 
 

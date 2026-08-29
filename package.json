@@ -1,6 +1,6 @@
 {
   "name": "@chrischall/jobber-mcp",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "license": "MIT",
   "mcpName": "io.github.chrischall/jobber-mcp",
   "description": "Jobber Client Hub MCP server for Claude — developed and maintained by AI (Claude Code)",
