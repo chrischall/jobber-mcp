@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/chrischall/jobber-mcp/compare/v0.2.0...v0.3.0) (2026-09-04)
+
+
+### Features
+
+* **tools:** compact by default — strip media URLs, and minify every response ([#31](https://github.com/chrischall/jobber-mcp/issues/31)) ([43252c9](https://github.com/chrischall/jobber-mcp/commit/43252c9c9e390ca2deceedae25cdfa7901359e9e))
+
 ## [0.2.0](https://github.com/chrischall/jobber-mcp/compare/v0.1.1...v0.2.0) (2026-08-29)
 
 
