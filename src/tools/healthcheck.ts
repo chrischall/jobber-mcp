@@ -1,5 +1,5 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { messageOf, textResult } from '@chrischall/mcp-utils';
+import { messageOf, minifiedResult } from '@chrischall/mcp-utils';
 import type { JobberClient } from '../client.js';
 
 /**
@@ -36,7 +36,7 @@ export function registerHealthcheckTools(server: McpServer, client: JobberClient
       try {
         bridge = await client.bridgeStatus();
       } catch (err) {
-        return textResult({
+        return minifiedResult({
           ok: false,
           layer: 'bridge',
           error: messageOf(err),
@@ -47,7 +47,7 @@ export function registerHealthcheckTools(server: McpServer, client: JobberClient
       }
 
       if (!client.hubs.configured) {
-        return textResult({
+        return minifiedResult({
           ok: false,
           layer: 'config',
           bridge,
@@ -59,7 +59,7 @@ export function registerHealthcheckTools(server: McpServer, client: JobberClient
 
       try {
         const appointments = await client.listAppointments();
-        return textResult({
+        return minifiedResult({
           ok: true,
           layer: 'hub',
           elapsed_ms: Date.now() - start,
@@ -69,7 +69,7 @@ export function registerHealthcheckTools(server: McpServer, client: JobberClient
         });
       } catch (err) {
         const error = messageOf(err);
-        return textResult({
+        return minifiedResult({
           ok: false,
           layer: 'hub',
           elapsed_ms: Date.now() - start,
