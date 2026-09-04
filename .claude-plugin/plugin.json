@@ -1,7 +1,7 @@
 {
   "name": "jobber",
   "displayName": "Jobber Client Hub",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Read the Jobber Client Hub your home-service providers share with you — appointments, invoices, quotes and requests — via MCP",
   "author": {
     "name": "Chris Chall"
