@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { textResult } from '@chrischall/mcp-utils';
+import { minifiedResult } from '@chrischall/mcp-utils';
 import type { CardPage, JobberClient } from '../client.js';
 
 const hubArg = z
@@ -34,7 +34,7 @@ export function registerRecordTools(server: McpServer, client: JobberClient): vo
     },
     async ({ hub }) => {
       const appointments = await client.listAppointments(hub);
-      return textResult({
+      return minifiedResult({
         count: appointments.length,
         appointments,
         ...(appointments.length === 0 ? { note: emptyNote('appointments') } : {}),
@@ -93,7 +93,7 @@ export function registerRecordTools(server: McpServer, client: JobberClient): vo
     },
     async ({ path, hub }) => {
       const { text, url } = await client.readPage(path, hub);
-      return textResult({ url, characters: text.length, text });
+      return minifiedResult({ url, characters: text.length, text });
     },
   );
 
@@ -113,7 +113,7 @@ export function registerRecordTools(server: McpServer, client: JobberClient): vo
     },
     async () => {
       const hubs = client.hubs.list();
-      return textResult({
+      return minifiedResult({
         count: hubs.length,
         hubs,
         ...(hubs.length === 0
@@ -146,7 +146,7 @@ function registerCardTool(
     },
     async ({ hub }) => {
       const records = await client.listCards(opts.page, hub);
-      return textResult({
+      return minifiedResult({
         count: records.length,
         [opts.page]: records,
         ...(records.length === 0 ? { note: emptyNote(opts.page.replace('_', ' ')) } : {}),
