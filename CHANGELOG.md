@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.1](https://github.com/chrischall/jobber-mcp/compare/v0.3.0...v0.3.1) (2026-09-10)
+
+
+### Bug Fixes
+
+* **deps:** @fetchproxy/server 2.10.0 and @chrischall/mcp-utils 0.26.1 ([#42](https://github.com/chrischall/jobber-mcp/issues/42)) ([44fd742](https://github.com/chrischall/jobber-mcp/commit/44fd7428df83d13e52430faf18a125f913074e7b))
+* **deps:** bump hono from 4.13.1 to 4.13.7 ([#40](https://github.com/chrischall/jobber-mcp/issues/40)) ([1113dc6](https://github.com/chrischall/jobber-mcp/commit/1113dc611d2cd2e7c0f974fdff19952d881a991c))
+
 ## [0.3.0](https://github.com/chrischall/jobber-mcp/compare/v0.2.0...v0.3.0) (2026-09-04)
 
 
