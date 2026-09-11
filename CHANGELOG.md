@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/chrischall/jobber-mcp/compare/v0.3.1...v0.3.2) (2026-09-11)
+
+
+### Bug Fixes
+
+* **deps:** @fetchproxy/server 2.11.3, so the hosted extension pin persists ([#44](https://github.com/chrischall/jobber-mcp/issues/44)) ([110b120](https://github.com/chrischall/jobber-mcp/commit/110b120035cdb3fe779dc1a310e1beede52950c5))
+
 ## [0.3.1](https://github.com/chrischall/jobber-mcp/compare/v0.3.0...v0.3.1) (2026-09-10)
 
 
