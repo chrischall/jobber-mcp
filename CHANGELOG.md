@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.2](https://github.com/chrischall/jobber-mcp/compare/v0.3.1...v0.3.2) (2026-09-14)
+
+
+### Bug Fixes
+
+* **deps:** @fetchproxy/server 2.11.3, so the hosted extension pin persists ([#44](https://github.com/chrischall/jobber-mcp/issues/44)) ([110b120](https://github.com/chrischall/jobber-mcp/commit/110b120035cdb3fe779dc1a310e1beede52950c5))
+* **deps:** @fetchproxy/server 3.0.0 — protocol v4 (forward secrecy, AAD over the frame) ([#48](https://github.com/chrischall/jobber-mcp/issues/48)) ([5632074](https://github.com/chrischall/jobber-mcp/commit/5632074c63b5517aee8a2d31872e45ac90621507))
+* **deps:** bump zod in the production-dependencies group ([#47](https://github.com/chrischall/jobber-mcp/issues/47)) ([05da44c](https://github.com/chrischall/jobber-mcp/commit/05da44c43ee9c7fec88aced89d7f9a032896dd34))
+
 ## [0.3.1](https://github.com/chrischall/jobber-mcp/compare/v0.3.0...v0.3.1) (2026-09-10)
 
 
