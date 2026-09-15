@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/chrischall/jobber-mcp/compare/v0.3.2...v0.3.3) (2026-09-15)
+
+
+### Bug Fixes
+
+* **deps:** @fetchproxy/server 3.0.1 — capped peer frames, logged load drops, atomic identity writes ([#49](https://github.com/chrischall/jobber-mcp/issues/49)) ([ef6156a](https://github.com/chrischall/jobber-mcp/commit/ef6156a315a02b7110d8d3f38722388635473221))
+
 ## [0.3.2](https://github.com/chrischall/jobber-mcp/compare/v0.3.1...v0.3.2) (2026-09-14)
 
 
