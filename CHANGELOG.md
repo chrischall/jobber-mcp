@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.4.0](https://github.com/chrischall/jobber-mcp/compare/v0.3.3...v0.4.0) (2026-09-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* **mcp:** migrate server to SDK v2 ([#52](https://github.com/chrischall/jobber-mcp/issues/52))
+
+### Features
+
+* **mcp:** migrate server to SDK v2 ([#52](https://github.com/chrischall/jobber-mcp/issues/52)) ([1408200](https://github.com/chrischall/jobber-mcp/commit/14082004b1f9c4aad14bc4ebd0fbdfc3488767d0))
+
+
+### Bug Fixes
+
+* **build:** resolve Zod bundle alias portably ([#55](https://github.com/chrischall/jobber-mcp/issues/55)) ([48f00dd](https://github.com/chrischall/jobber-mcp/commit/48f00ddcdcbabc4e5a2ce1e0134601df212fb169))
+
 ## [0.3.3](https://github.com/chrischall/jobber-mcp/compare/v0.3.2...v0.3.3) (2026-09-15)
 
 
