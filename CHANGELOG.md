@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.0](https://github.com/chrischall/jobber-mcp/compare/v0.4.0...v1.0.0) (2026-09-20)
+
+
+### Features
+
+* **deps:** take mcp-utils 1.0.0, fixing server/discover ([#56](https://github.com/chrischall/jobber-mcp/issues/56)) ([81bbeab](https://github.com/chrischall/jobber-mcp/commit/81bbeab6fe08391df1e004434382b039a72923f0))
+
+
+### Bug Fixes
+
+* **release:** drop bump-minor-pre-major so a breaking change cuts a major ([#60](https://github.com/chrischall/jobber-mcp/issues/60)) ([123f3e0](https://github.com/chrischall/jobber-mcp/commit/123f3e0fde53f76591948f59db61978159ffa167))
+
 ## [0.4.0](https://github.com/chrischall/jobber-mcp/compare/v0.3.3...v0.4.0) (2026-09-17)
 
 
