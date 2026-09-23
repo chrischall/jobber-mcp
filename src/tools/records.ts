@@ -10,6 +10,20 @@ const hubArg = z
   .describe('Which provider hub to read, by label. Omit when only one is configured.');
 
 /**
+ * The only hub routes jobber_read_page may fetch: the four read families, each
+ * with an optional numeric detail id and an optional `key=value` query string.
+ *
+ * An allow-list, not a deny-list, because the tool is annotated read-only and
+ * a host may run it unprompted. The hub serves side effects on plain GETs —
+ * `logout` ends the session — plus write forms (`work_requests/new`) and the
+ * payment-methods page (`wallet`); a prompt-injected page must not be able to
+ * steer the model to any of them. Anything outside the pattern (including
+ * `..`, a scheme or a host) is rejected before a request is made.
+ */
+const READ_PATH_RE =
+  /^\/?(?:appointments|invoices|quotes|work_requests)(?:\/\d+)?(?:\?[A-Za-z0-9_]+=[A-Za-z0-9_-]*(?:&[A-Za-z0-9_]+=[A-Za-z0-9_-]*)*)?$/;
+
+/**
  * Empty is a real answer here, and it is also what a broken parser returns, so
  * every list result says which it was rather than leaving the caller to guess.
  */
@@ -69,11 +83,11 @@ export function registerRecordTools(server: McpServer, client: JobberClient): vo
   server.registerTool(
     'jobber_read_page',
     {
-      title: 'Read any Client Hub page as text',
+      title: 'Read a Client Hub page as text',
       description:
-        'Fetch any page of a Jobber Client Hub and return its readable text. Use for detail pages (e.g. `invoices/150208512`, `appointments/2236612358`) whose layout has no pinned schema, and to inspect a page when a list tool returns nothing. Read-only.',
+        'Fetch a read page of a Jobber Client Hub — `appointments`, `invoices`, `quotes` or `work_requests`, optionally with a numeric id — and return its readable text. Use for detail pages (e.g. `invoices/150208512`, `appointments/2236612358`) whose layout has no pinned schema, and to inspect a page when a list tool returns nothing. Other hub routes (logout, forms, payment pages) are refused. Read-only.',
       annotations: {
-        title: 'Read any Client Hub page as text',
+        title: 'Read a Client Hub page as text',
         readOnlyHint: true,
         idempotentHint: true,
         openWorldHint: true,
@@ -83,11 +97,15 @@ export function registerRecordTools(server: McpServer, client: JobberClient): vo
           .string()
           .min(1)
           .regex(
-            /^[A-Za-z0-9_\-/.?=&]+$/,
-            'Hub-relative path only, e.g. "invoices/150208512" — no scheme or host.',
+            READ_PATH_RE,
+            'Only the read pages are reachable: appointments, invoices, quotes or work_requests, ' +
+              'optionally followed by a numeric id (e.g. "invoices/150208512") and a query string. ' +
+              'Other hub routes (logout, forms, payment pages) are refused.',
           )
-          .refine((p) => !p.includes('..'), 'Path may not traverse with "..".')
-          .describe('Hub-relative path, e.g. "invoices" or "invoices/150208512".'),
+          .describe(
+            'Hub-relative read path: "appointments", "invoices", "quotes" or "work_requests", ' +
+              'optionally with a numeric id, e.g. "invoices/150208512".',
+          ),
         hub: hubArg,
       }),
     },

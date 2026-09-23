@@ -92,7 +92,7 @@ need the argument.
 | `jobber_list_invoices` | Invoices with number, subject and section (`Paid`, `Overdue`, …) |
 | `jobber_list_quotes` | Quotes with their approval section |
 | `jobber_list_work_requests` | Requests you raised |
-| `jobber_read_page` | Readable text of any hub page, including detail pages |
+| `jobber_read_page` | Readable text of an appointments, invoices, quotes or work-requests page, including detail pages |
 | `jobber_list_hubs` | Configured hubs (labels only — never the ids) |
 | `jobber_healthcheck` | Which layer is broken: bridge, config, or hub |
 

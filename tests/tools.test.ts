@@ -106,6 +106,60 @@ describe('jobber_read_page', () => {
     expect(res.isError).toBe(true);
     await h.close();
   });
+
+  // The tool is annotated readOnlyHint/idempotentHint, so a host may run it
+  // without asking. `logout` is a plain GET that ends the hub session, and
+  // `work_requests/new` is a write form — neither is a read, so neither may
+  // be reachable, whatever a prompt-injected page asks for.
+  it.each([
+    'logout',
+    '/logout',
+    'logout?x=1',
+    'sign_out',
+    'work_requests/new',
+    'invoices/new',
+    'invoices/150208512/pay',
+    'quotes/42/approve',
+    'wallet',
+    'contact_us',
+    'invoices/abc',
+  ])('refuses the non-read route %s without fetching it', async (path) => {
+    const fetched: string[] = [];
+    const transport: JobberTransport = {
+      get: async (url) => {
+        fetched.push(url);
+        return { status: 200, body: INVOICES_PAGE };
+      },
+      status: async () => ({}),
+    };
+    const client = new JobberClient({
+      transport,
+      hubs: new HubRegistry({ JOBBER_HUB_ID: HUB } as NodeJS.ProcessEnv),
+    });
+    const h = await createTestHarness((server) => registerRecordTools(server, client));
+    const res = await h.callTool('jobber_read_page', { path });
+    expect(res.isError).toBe(true);
+    expect(fetched).toEqual([]);
+    await h.close();
+  });
+
+  it.each([
+    'appointments',
+    'appointments/2236612358',
+    'invoices',
+    'invoices/150208512',
+    '/invoices/150208512',
+    'quotes',
+    'quotes/42',
+    'work_requests',
+    'work_requests/7',
+    'invoices?page=2',
+  ])('reads the read-family route %s', async (path) => {
+    const h = await harnessFor({ status: 200, body: INVOICES_PAGE });
+    const res = await h.callTool('jobber_read_page', { path });
+    expect(res.isError).toBeFalsy();
+    await h.close();
+  });
 });
 
 describe('jobber_healthcheck', () => {
