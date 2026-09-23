@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.2](https://github.com/chrischall/jobber-mcp/compare/v1.0.1...v1.0.2) (2026-09-23)
+
+
+### Bug Fixes
+
+* **manifest:** describe jobber_read_page as limited to the four read page families ([#67](https://github.com/chrischall/jobber-mcp/issues/67)) ([6c2ad37](https://github.com/chrischall/jobber-mcp/commit/6c2ad37782b7c798d31cac2cfa752b27160a0b4d))
+* **security:** keep the Client Hub id out of tool results and restrict jobber_read_page to read pages ([#64](https://github.com/chrischall/jobber-mcp/issues/64)) ([d98fada](https://github.com/chrischall/jobber-mcp/commit/d98fada08c67f6308a39a01b87a955db9faa102f))
+
 ## [1.0.1](https://github.com/chrischall/jobber-mcp/compare/v1.0.0...v1.0.1) (2026-09-23)
 
 
