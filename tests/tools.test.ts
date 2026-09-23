@@ -5,6 +5,7 @@ import { HubRegistry } from '../src/hubs.js';
 import { registerRecordTools } from '../src/tools/records.js';
 import { registerHealthcheckTools } from '../src/tools/healthcheck.js';
 import type { JobberTransport } from '../src/transport.js';
+import { JobberFetchproxyTransport } from '../src/transport-fetchproxy.js';
 
 const HUB = '00000000-1111-2222-3333-444444444444';
 
@@ -207,6 +208,54 @@ describe('the hub id never reaches a tool result', () => {
     expect(JSON.stringify(res)).not.toContain(HUB);
     await h.close();
   });
+});
+
+describe('the hub id never reaches a tool result through a bridge failure', () => {
+  // @fetchproxy/server builds its failure messages from the absolute URL, which
+  // carries the hub UUID: `fetchproxy: <url> did not respond within 20000ms`,
+  // `fetchproxy bridge down during fetch (<url>)`. A timeout is routine for a
+  // browser bridge, so the scrub cannot stop at the response body.
+  const hubUrl = (h: string) => `https://clienthub.getjobber.com/client_hubs/${h}/appointments`;
+  const failures = [
+    `fetchproxy: ${hubUrl(HUB)} did not respond within 20000ms`,
+    `fetchproxy bridge down during fetch (${hubUrl(HUB.toUpperCase())})`,
+  ];
+
+  function harnessWithThrowingBridge(message: string) {
+    const transport = new JobberFetchproxyTransport({
+      bridge: {
+        start: async () => undefined,
+        fetch: async () => {
+          throw new Error(message);
+        },
+        status: () => ({ role: 'host', port: 37149 }),
+      },
+    });
+    const client = new JobberClient({
+      transport,
+      hubs: new HubRegistry({ JOBBER_HUB_ID: HUB } as NodeJS.ProcessEnv),
+    });
+    return createTestHarness((server) => {
+      registerRecordTools(server, client);
+      registerHealthcheckTools(server, client);
+    });
+  }
+
+  for (const message of failures) {
+    it.each([
+      ['jobber_list_appointments', {}],
+      ['jobber_list_invoices', {}],
+      ['jobber_read_page', { path: 'invoices/150208512' }],
+      ['jobber_healthcheck', {}],
+    ] as const)(`%s — ${message.split(' ')[1]}`, async (tool, args) => {
+      const h = await harnessWithThrowingBridge(message);
+      const raw = JSON.stringify(await h.callTool(tool, args));
+      expect(raw.toLowerCase()).not.toContain(HUB.toLowerCase());
+      // The failure itself still surfaces, with the id replaced.
+      expect(raw).toContain('client_hubs/[hub-id]/appointments');
+      await h.close();
+    });
+  }
 });
 
 describe('jobber_healthcheck', () => {

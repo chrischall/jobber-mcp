@@ -43,9 +43,10 @@ export class JobberClient {
   /**
    * Raw HTML of a hub page, with the failure modes classified.
    *
-   * The hub id is scrubbed from the body before anything else reads it. Live
-   * pages embed it in every link, and it is a bearer credential, so no parse
-   * result, page text or error excerpt built from the body can carry it out.
+   * The hub id is scrubbed from the body before anything else reads it, and
+   * from any error the transport throws. Live pages embed it in every link,
+   * and bridge errors quote the absolute URL; it is a bearer credential, so no
+   * parse result, page text or error message can carry it out.
    */
   async fetchPage(
     path: string,
@@ -53,10 +54,25 @@ export class JobberClient {
   ): Promise<{ html: string; url: string; hub: Hub }> {
     const hub: Hub = this.hubs.resolve(hubSelector);
     const url = this.hubs.urlFor(hub, path);
-    const res = await this.transport.get(url);
-    const status = res.status;
     // hubIds are validated UUIDs (hex and dashes), so safe as a pattern.
-    const body = res.body.replace(new RegExp(hub.hubId, 'gi'), HUB_ID_PLACEHOLDER);
+    const scrub = (s: string): string => s.replace(new RegExp(hub.hubId, 'gi'), HUB_ID_PLACEHOLDER);
+
+    let res: { status: number; body: string };
+    try {
+      res = await this.transport.get(url);
+    } catch (err) {
+      // The bridge builds its failure messages (timeout, bridge down) from the
+      // absolute URL, which carries the hub id — scrub those too, in place so
+      // the error keeps its type for callers that classify it.
+      if (err instanceof Error) {
+        err.message = scrub(err.message);
+        if (err.stack) err.stack = scrub(err.stack);
+        throw err;
+      }
+      throw new Error(scrub(String(err)));
+    }
+    const status = res.status;
+    const body = scrub(res.body);
 
     // Order matters: a challenge is served as a 403, so classify it as a bot
     // wall rather than reporting "not found" or "signed out".
