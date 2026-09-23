@@ -20,6 +20,9 @@ import {
 } from './parse.js';
 import type { JobberTransport } from './transport.js';
 
+/** What the hub id is replaced with in any page body this client returns. */
+const HUB_ID_PLACEHOLDER = '[hub-id]';
+
 /** Hub pages that hold card lists. `appointments` is deliberately not here. */
 export type CardPage = 'invoices' | 'quotes' | 'work_requests';
 
@@ -37,11 +40,39 @@ export class JobberClient {
     this.hubs = opts.hubs ?? new HubRegistry();
   }
 
-  /** Raw HTML of a hub page, with the failure modes classified. */
-  async fetchPage(path: string, hubSelector?: string): Promise<{ html: string; url: string }> {
+  /**
+   * Raw HTML of a hub page, with the failure modes classified.
+   *
+   * The hub id is scrubbed from the body before anything else reads it, and
+   * from any error the transport throws. Live pages embed it in every link,
+   * and bridge errors quote the absolute URL; it is a bearer credential, so no
+   * parse result, page text or error message can carry it out.
+   */
+  async fetchPage(
+    path: string,
+    hubSelector?: string,
+  ): Promise<{ html: string; url: string; hub: Hub }> {
     const hub: Hub = this.hubs.resolve(hubSelector);
     const url = this.hubs.urlFor(hub, path);
-    const { status, body } = await this.transport.get(url);
+    // hubIds are validated UUIDs (hex and dashes), so safe as a pattern.
+    const scrub = (s: string): string => s.replace(new RegExp(hub.hubId, 'gi'), HUB_ID_PLACEHOLDER);
+
+    let res: { status: number; body: string };
+    try {
+      res = await this.transport.get(url);
+    } catch (err) {
+      // The bridge builds its failure messages (timeout, bridge down) from the
+      // absolute URL, which carries the hub id — scrub those too, in place so
+      // the error keeps its type for callers that classify it.
+      if (err instanceof Error) {
+        err.message = scrub(err.message);
+        if (err.stack) err.stack = scrub(err.stack);
+        throw err;
+      }
+      throw new Error(scrub(String(err)));
+    }
+    const status = res.status;
+    const body = scrub(res.body);
 
     // Order matters: a challenge is served as a 403, so classify it as a bot
     // wall rather than reporting "not found" or "signed out".
@@ -72,7 +103,7 @@ export class JobberClient {
       throw new SessionNotAuthenticatedError('Jobber Client Hub', 'clienthub.getjobber.com');
     }
 
-    return { html: body, url };
+    return { html: body, url, hub };
   }
 
   async listAppointments(hubSelector?: string): Promise<Appointment[]> {
@@ -85,10 +116,18 @@ export class JobberClient {
     return parseCards(html);
   }
 
-  /** Readable text of any hub page — the escape hatch for detail pages. */
-  async readPage(path: string, hubSelector?: string): Promise<{ text: string; url: string }> {
-    const { html, url } = await this.fetchPage(path, hubSelector);
-    return { text: pageText(html), url };
+  /**
+   * Readable text of a hub page — the escape hatch for detail pages.
+   *
+   * Reports the hub-relative path and the hub's label, never the absolute
+   * URL: that carries the hub id, which is a credential.
+   */
+  async readPage(
+    path: string,
+    hubSelector?: string,
+  ): Promise<{ text: string; path: string; hub: string }> {
+    const { html, hub } = await this.fetchPage(path, hubSelector);
+    return { text: pageText(html), path: path.replace(/^\/+/, ''), hub: hub.label };
   }
 
   async bridgeStatus(): Promise<Record<string, unknown>> {

@@ -33,6 +33,7 @@ export interface Appointment {
   duration: string | null;
   location: string | null;
   confirmed: boolean | null;
+  /** Hub-relative path, e.g. `appointments/2236612358` — never the hub id. */
   url: string | null;
 }
 
@@ -52,6 +53,7 @@ export interface CardRecord {
    * some records and silently drop rows from others.
    */
   details: string[];
+  /** Hub-relative path, e.g. `invoices/150208512` — never the hub id. */
   url: string | null;
 }
 
@@ -77,6 +79,19 @@ export function idFromUrl(url: string | null | undefined): string | null {
   if (!url) return null;
   const m = String(url).match(/\/(\d+)(?:[/?#]|$)/);
   return m?.[1] ?? null;
+}
+
+/**
+ * A record link rewritten relative to its hub, e.g.
+ * `/client_hubs/<uuid>/invoices/150208512` -> `invoices/150208512`.
+ *
+ * The hub UUID is a bearer credential, so it must not ride out in a record's
+ * `url`; the relative form is also exactly what `jobber_read_page` takes. A
+ * link with no `/client_hubs/<id>/` prefix is returned unchanged.
+ */
+export function hubRelativePath(url: string | null): string | null {
+  if (!url) return null;
+  return url.replace(/^(?:https?:\/\/[^/]+)?\/client_hubs\/[^/?#]+\//, '');
 }
 
 /** Every `data-props` payload on the page; unparseable ones are dropped. */
@@ -117,7 +132,7 @@ export function parseAppointments(html: string): Appointment[] {
         duration: str(a['duration']),
         location: str(a['location']),
         confirmed: typeof a['confirmed'] === 'boolean' ? a['confirmed'] : null,
-        url,
+        url: hubRelativePath(url),
       };
     });
   });
@@ -166,7 +181,7 @@ export function parseCards(html: string): CardRecord[] {
         // for the same reason as `attrs`/`body` above.
         .map((m) => stripTags(m[1] as string))
         .filter(Boolean),
-      url: href,
+      url: hubRelativePath(href),
     });
   }
 

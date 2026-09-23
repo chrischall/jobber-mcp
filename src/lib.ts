@@ -6,6 +6,7 @@ export { JobberClient, type CardPage, type JobberClientOptions } from './client.
 export { HubRegistry, CLIENT_HUB_ORIGIN, type Hub } from './hubs.js';
 export {
   decodeEntities,
+  hubRelativePath,
   idFromUrl,
   looksChallenged,
   pageText,
