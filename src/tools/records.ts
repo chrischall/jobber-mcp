@@ -110,8 +110,13 @@ export function registerRecordTools(server: McpServer, client: JobberClient): vo
       }),
     },
     async ({ path, hub }) => {
-      const { text, url } = await client.readPage(path, hub);
-      return minifiedResult({ url, characters: text.length, text });
+      const page = await client.readPage(path, hub);
+      return minifiedResult({
+        hub: page.hub,
+        path: page.path,
+        characters: page.text.length,
+        text: page.text,
+      });
     },
   );
 

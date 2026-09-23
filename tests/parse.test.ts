@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  hubRelativePath,
   idFromUrl,
   looksChallenged,
   pageText,
@@ -65,6 +66,7 @@ describe('parseAppointments', () => {
       weekday: 'Sunday',
       time: '9:00am',
       location: '123 Elm St',
+      url: 'appointments/2236612358',
     });
   });
 
@@ -87,6 +89,22 @@ describe('parseAppointments', () => {
   });
 });
 
+describe('hubRelativePath', () => {
+  // The hub UUID in an href is a bearer credential, so record urls are
+  // rewritten to the hub-relative path jobber_read_page takes.
+  it.each([
+    ['/client_hubs/UUID/invoices/150208512', 'invoices/150208512'],
+    ['https://clienthub.getjobber.com/client_hubs/UUID/appointments/1?x=1', 'appointments/1?x=1'],
+    ['/a/1', '/a/1'],
+  ])('rewrites %s to %s', (href, want) => {
+    expect(hubRelativePath(href)).toBe(want);
+  });
+
+  it('passes null through', () => {
+    expect(hubRelativePath(null)).toBeNull();
+  });
+});
+
 describe('parseCards', () => {
   it('attributes each card to the heading above it', () => {
     const out = parseCards(INVOICES_HTML);
@@ -100,7 +118,8 @@ describe('parseCards', () => {
       id: '150208512',
       title: 'For Services Rendered',
       number: '#15313',
-      url: '/client_hubs/UUID/invoices/150208512',
+      // Hub-relative: the hub UUID in the href is a bearer credential.
+      url: 'invoices/150208512',
     });
   });
 

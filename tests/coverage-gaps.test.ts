@@ -55,17 +55,18 @@ describe('fetchPage — unclassified HTTP failures', () => {
 });
 
 describe('readPage', () => {
-  it('returns the page as readable text with the resolved url', async () => {
+  it('returns the page as readable text with the hub-relative path and hub label', async () => {
     const client = clientFor({
       status: 200,
       body: '<html><body><h1>Invoice 15313</h1><p>Due Apr 07</p><script>ignored()</script></body></html>',
     });
-    const { text, url } = await client.readPage('invoices/150208512');
+    const result = await client.readPage('/invoices/150208512');
 
-    expect(text).toContain('Invoice 15313');
-    expect(text).toContain('Due Apr 07');
-    expect(text).not.toContain('ignored()');
-    expect(url).toBe(`https://clienthub.getjobber.com/client_hubs/${HUB}/invoices/150208512`);
+    expect(result.text).toContain('Invoice 15313');
+    expect(result.text).toContain('Due Apr 07');
+    expect(result.text).not.toContain('ignored()');
+    // No absolute url: it would carry the hub UUID, a bearer credential.
+    expect(result).toEqual({ text: result.text, path: 'invoices/150208512', hub: 'default' });
   });
 });
 
@@ -131,7 +132,9 @@ describe('tools whose handlers the roster tests do not run', () => {
     );
     expect(String(data['text'])).toContain('Quote 42');
     expect(data['characters']).toBe(String(data['text']).length);
-    expect(String(data['url'])).toContain('/quotes/42');
+    expect(data['path']).toBe('quotes/42');
+    expect(data['hub']).toBe('default');
+    expect(data).not.toHaveProperty('url');
     await h.close();
   });
 });
