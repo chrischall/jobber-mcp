@@ -66,7 +66,7 @@
     },
     {
       "name": "jobber_read_page",
-      "description": "Readable text of any Client Hub page, including detail pages"
+      "description": "Readable text of an appointments, invoices, quotes or work-requests page, including detail pages"
     },
     {
       "name": "jobber_list_hubs",
