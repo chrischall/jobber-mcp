@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1](https://github.com/chrischall/jobber-mcp/compare/v1.0.0...v1.0.1) (2026-09-23)
+
+
+### Bug Fixes
+
+* **deps:** require zod ^4.6.5 to match @chrischall/mcp-utils 2.4.0 ([#63](https://github.com/chrischall/jobber-mcp/issues/63)) ([47a609c](https://github.com/chrischall/jobber-mcp/commit/47a609c8da30a6e3c85112ee74ba0dc6ffed7356))
+* **deps:** upgrade @chrischall/mcp-utils to 2.4.0 and @fetchproxy/* to 3.2.0 ([#61](https://github.com/chrischall/jobber-mcp/issues/61)) ([7029533](https://github.com/chrischall/jobber-mcp/commit/7029533173a8a4aea469edfe34053262eaa6d071))
+
 ## [1.0.0](https://github.com/chrischall/jobber-mcp/compare/v0.4.0...v1.0.0) (2026-09-20)
 
 
