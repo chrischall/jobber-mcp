@@ -200,7 +200,7 @@ describe('jobber_healthcheck when the bridge is unreachable', () => {
     expect(result.isError).toBeFalsy();
     expect(data['ok']).toBe(false);
     expect(data['layer']).toBe('bridge');
-    expect(String(data['hint'])).toMatch(/Transporter/);
+    expect(String(data['hint'])).toMatch(/ContextMint Bridge/);
     await h.close();
   });
 });

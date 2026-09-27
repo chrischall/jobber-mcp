@@ -29,11 +29,13 @@ npm install -g @fetchproxy/cli               # provides `fpx`
 fpx profile add jobber --domain getjobber.com # fetch capability only — no cookie scope needed
 ```
 
-The first fetch prints a pair code to **stderr**; approve it in the Transporter
-extension popup. Pairing persists — every later call reuses it.
+The first fetch prints a pair code to **stderr**; approve it in the ContextMint
+Bridge extension popup. Pairing persists — every later call reuses it.
 
-Requirements: the **Transporter** extension installed in Chrome, an open
-`clienthub.getjobber.com` tab signed into the hub, and the extension's Chrome
+Requirements: the **ContextMint Bridge** extension (from
+https://github.com/nullnet-app/contextmint-bridge/releases — Chrome: load the
+chrome zip unpacked; Safari: ships inside the ContextMint app), an open
+`clienthub.getjobber.com` tab signed into the hub, and the extension's
 **Site access** allowing `getjobber.com`.
 
 > Only the fetch capability is declared, deliberately. Cookies ride the tab

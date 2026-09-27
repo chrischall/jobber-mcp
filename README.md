@@ -42,8 +42,10 @@ Read-only, and not by omission — see [Why there are no writes](#why-there-are-
 
 - [Claude Desktop](https://claude.ai/download) or [Claude Code](https://docs.anthropic.com/en/docs/claude-code)
 - [Node.js](https://nodejs.org) 22 or later
-- Chrome with the **Transporter** (fetchproxy) extension, its Site access
-  allowing `getjobber.com`, and a signed-in Client Hub tab
+- The **ContextMint Bridge** browser extension, installed from its
+  [releases page](https://github.com/nullnet-app/contextmint-bridge/releases)
+  (Chrome: load the chrome zip unpacked; Safari: it ships inside the ContextMint
+  app), with Site access allowing `getjobber.com`, and a signed-in Client Hub tab
 - A Client Hub link from a provider — the "View Details" button in any of their
   emails
 
@@ -122,7 +124,7 @@ server cannot deliver that, and the reason is structural rather than a
 missing afternoon of work.
 
 [`mcp-host`](https://github.com/chrischall/mcp-host) runs children on a Fly
-machine. There is no browser there and no Transporter extension, and a lifted
+machine. There is no browser there and no ContextMint Bridge extension, and a lifted
 cookie does not help: `cf_clearance` is bound to IP, User-Agent and TLS
 fingerprint together, so a session captured on a laptop is dead the moment a
 datacenter replays it. mcp-host's own
@@ -171,7 +173,7 @@ boots the real built artifacts — including the bundle in a directory with no
 ## Acknowledgement of terms
 
 **1. This server accesses your own Client Hub.** Every request is dispatched
-through your own signed-in browser session via the fetchproxy extension,
+through your own signed-in browser session via the ContextMint Bridge extension,
 reusing the session you already have. It does not — and cannot — reach anyone
 else's hub.
 
