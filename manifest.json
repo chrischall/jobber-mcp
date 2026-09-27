@@ -74,7 +74,7 @@
     },
     {
       "name": "jobber_healthcheck",
-      "description": "Verify the fetchproxy bridge and the hub are reachable"
+      "description": "Verify ContextMint Bridge and the hub are reachable"
     }
   ],
   "compatibility": {

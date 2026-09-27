@@ -44,8 +44,15 @@ Read-only, and not by omission — see [Why there are no writes](#why-there-are-
 - [Node.js](https://nodejs.org) 22 or later
 - The **ContextMint Bridge** browser extension, installed from its
   [releases page](https://github.com/nullnet-app/contextmint-bridge/releases)
-  (Chrome: load the chrome zip unpacked; Safari: it ships inside the ContextMint
-  app), with Site access allowing `getjobber.com`, and a signed-in Client Hub tab
+  (Chrome: load the chrome zip unpacked. Safari isn't available yet — it will
+  ship inside the ContextMint app, which has no public download — so use Chrome
+  for now), with Site access allowing `getjobber.com`, and a signed-in Client
+  Hub tab. ContextMint Bridge is the fetchproxy browser extension under its new
+  name, from the same maintainer — fetchproxy's own
+  [README](https://github.com/chrischall/fetchproxy#extension) points to it. Its
+  source is public at <https://github.com/nullnet-app/contextmint-bridge>: build
+  it yourself, or check a release zip against the `.sha256` file published
+  beside it (`shasum -a 256 -c contextmint-bridge-chrome-<version>.zip.sha256`).
 - A Client Hub link from a provider — the "View Details" button in any of their
   emails
 
