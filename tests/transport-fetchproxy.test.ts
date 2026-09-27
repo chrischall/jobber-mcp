@@ -15,7 +15,7 @@ import {
  * (what it DECLARES to @fetchproxy/server), so no socket is ever opened.
  *
  * The declaration matters as much as the behaviour: a wrong port means the
- * Transporter extension never connects, and a wrong domain list means every
+ * ContextMint Bridge extension never connects, and a wrong domain list means every
  * fetch is refused before it leaves the tab.
  */
 

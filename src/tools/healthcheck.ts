@@ -42,8 +42,8 @@ export function registerHealthcheckTools(server: McpServer, client: JobberClient
           layer: 'bridge',
           error: messageOf(err),
           hint:
-            'The fetchproxy bridge is not running. Start Chrome with the Transporter ' +
-            'extension installed and enabled for getjobber.com.',
+            'The fetchproxy bridge is not running. Start Chrome with the ContextMint Bridge ' +
+            'extension installed and its Site access allowing getjobber.com.',
         });
       }
 

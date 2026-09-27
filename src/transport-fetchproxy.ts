@@ -1,7 +1,7 @@
 /**
  * Browser-bridge transport: every Client Hub page is fetched as a same-origin
  * request inside the user's own signed-in tab, via `@fetchproxy/server` plus
- * the Transporter extension.
+ * the ContextMint Bridge extension.
  *
  * Why there is no server-side path (verified live 2026-08-09):
  * `clienthub.getjobber.com` sits behind a Cloudflare managed challenge that
@@ -24,8 +24,8 @@ import { readPortEnv } from '@chrischall/mcp-utils';
 import type { JobberTransport } from './transport.js';
 
 /**
- * The whole fetchproxy fleet shares ONE concentrator port — the Transporter
- * extension dials that port, and servers host/peer-elect on it. A "unique"
+ * The whole fetchproxy fleet shares ONE concentrator port — the ContextMint
+ * Bridge extension dials that port, and servers host/peer-elect on it. A "unique"
  * port means the extension never connects. Override only for test isolation,
  * or for a future host that needs a port per registration.
  */
