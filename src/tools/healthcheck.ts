@@ -21,7 +21,7 @@ export function registerHealthcheckTools(server: McpServer, client: JobberClient
     {
       title: 'Verify the bridge and hub are reachable',
       description:
-        'Checks the fetchproxy browser bridge and, if a hub is configured, fetches its appointments page. Reports which layer failed and what to do about it. Read-only.',
+        'Checks the ContextMint Bridge browser connection and, if a hub is configured, fetches its appointments page. Reports which layer failed and what to do about it. Read-only.',
       annotations: {
         title: 'Verify the bridge and hub are reachable',
         readOnlyHint: true,
@@ -42,7 +42,7 @@ export function registerHealthcheckTools(server: McpServer, client: JobberClient
           layer: 'bridge',
           error: messageOf(err),
           hint:
-            'The fetchproxy bridge is not running. Start Chrome with the ContextMint Bridge ' +
+            'ContextMint Bridge is not reachable. Start Chrome with the ContextMint Bridge ' +
             'extension installed and its Site access allowing getjobber.com.',
         });
       }

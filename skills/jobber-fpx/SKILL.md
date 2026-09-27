@@ -34,9 +34,12 @@ Bridge extension popup. Pairing persists — every later call reuses it.
 
 Requirements: the **ContextMint Bridge** extension (from
 https://github.com/nullnet-app/contextmint-bridge/releases — Chrome: load the
-chrome zip unpacked; Safari: ships inside the ContextMint app), an open
+chrome zip unpacked; Safari isn't available yet, so use Chrome for now), an open
 `clienthub.getjobber.com` tab signed into the hub, and the extension's
-**Site access** allowing `getjobber.com`.
+**Site access** allowing `getjobber.com`. (ContextMint Bridge is the fetchproxy
+extension renamed, same maintainer; source at
+https://github.com/nullnet-app/contextmint-bridge — verify a release zip with
+`shasum -a 256 -c contextmint-bridge-chrome-<version>.zip.sha256`.)
 
 > Only the fetch capability is declared, deliberately. Cookies ride the tab
 > automatically, so no cookie scope is needed — and widening scope *after* the
