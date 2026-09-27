@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.3](https://github.com/chrischall/jobber-mcp/compare/v1.0.2...v1.0.3) (2026-09-27)
+
+
+### Bug Fixes
+
+* **deps:** bump the production-dependencies group with 2 updates ([#71](https://github.com/chrischall/jobber-mcp/issues/71)) ([1d0020c](https://github.com/chrischall/jobber-mcp/commit/1d0020c2f21896867de1d526581685efd85ac1a9))
+* **deps:** move to [@fetchproxy](https://github.com/fetchproxy) 3.4 for ContextMint Bridge errors, capability subsets and managed pins ([#73](https://github.com/chrischall/jobber-mcp/issues/73)) ([db0b7b7](https://github.com/chrischall/jobber-mcp/commit/db0b7b723472586cec383c124cdccb695c9a780e))
+* **deps:** move to @chrischall/mcp-utils 2.8 and [@fetchproxy](https://github.com/fetchproxy) 3.4.1 for clearer browser-bridge errors ([#74](https://github.com/chrischall/jobber-mcp/issues/74)) ([860b695](https://github.com/chrischall/jobber-mcp/commit/860b6957171e07a03a7cf62bc39cb4b36360e88f))
+
 ## [1.0.2](https://github.com/chrischall/jobber-mcp/compare/v1.0.1...v1.0.2) (2026-09-23)
 
 
