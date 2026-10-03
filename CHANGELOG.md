@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.4](https://github.com/chrischall/jobber-mcp/compare/v1.0.3...v1.0.4) (2026-10-03)
+
+
+### Bug Fixes
+
+* **deps:** bump @chrischall/mcp-utils to 2.12.0 ([#78](https://github.com/chrischall/jobber-mcp/issues/78)) ([4607627](https://github.com/chrischall/jobber-mcp/commit/4607627ae2d39199575657cbe84996facfa63f6a))
+* **deps:** bump @chrischall/mcp-utils to 2.13.0 ([#79](https://github.com/chrischall/jobber-mcp/issues/79)) ([1dac148](https://github.com/chrischall/jobber-mcp/commit/1dac1485f61cf112125cdaa32b04ebe876df7d6d))
+* keep credentials and report edge_blocked on CDN/WAF blocks (mcp-utils 2.10.0) ([#77](https://github.com/chrischall/jobber-mcp/issues/77)) ([3369b61](https://github.com/chrischall/jobber-mcp/commit/3369b61a85657f994f9972175d32a5090723c172))
+* report CDN/WAF blocks as edge_blocked, not a rejected credential (mcp-utils 2.9.0) ([#75](https://github.com/chrischall/jobber-mcp/issues/75)) ([5afac84](https://github.com/chrischall/jobber-mcp/commit/5afac84974f1673e7c03880dd7859b3777c00e62))
+
 ## [1.0.3](https://github.com/chrischall/jobber-mcp/compare/v1.0.2...v1.0.3) (2026-09-27)
 
 
