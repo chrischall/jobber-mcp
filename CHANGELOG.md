@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.5](https://github.com/chrischall/jobber-mcp/compare/v1.0.4...v1.0.5) (2026-10-05)
+
+
+### Bug Fixes
+
+* **deps:** bump @fetchproxy/server ([#82](https://github.com/chrischall/jobber-mcp/issues/82)) ([5aefae2](https://github.com/chrischall/jobber-mcp/commit/5aefae2a63455f9fa88bd7186d8a79050b9d1147))
+* **deps:** require @chrischall/mcp-utils 2.14.0 and MCP SDK 2.3.0 ([#84](https://github.com/chrischall/jobber-mcp/issues/84)) ([9aaddcc](https://github.com/chrischall/jobber-mcp/commit/9aaddcc369dec823bcbf7c1a4b9b6fbd6d144a2a))
+
 ## [1.0.4](https://github.com/chrischall/jobber-mcp/compare/v1.0.3...v1.0.4) (2026-10-03)
 
 
