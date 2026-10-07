@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.6](https://github.com/chrischall/jobber-mcp/compare/v1.0.5...v1.0.6) (2026-10-07)
+
+
+### Bug Fixes
+
+* **deps:** bump source-map-js ([#87](https://github.com/chrischall/jobber-mcp/issues/87)) ([20f3a65](https://github.com/chrischall/jobber-mcp/commit/20f3a656729ef15e19b20007231e82d9a7a28980))
+* **deps:** update mcp-utils to 2.15.0 and fetchproxy to 3.6.0 for elicitation opt-out and bridge fixes ([#85](https://github.com/chrischall/jobber-mcp/issues/85)) ([bdbfb02](https://github.com/chrischall/jobber-mcp/commit/bdbfb02ac432256d5f80cf6adf0313a1af77aeb8))
+
 ## [1.0.5](https://github.com/chrischall/jobber-mcp/compare/v1.0.4...v1.0.5) (2026-10-05)
 
 
