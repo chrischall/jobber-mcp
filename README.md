@@ -89,7 +89,7 @@ need the argument.
 | --- | --- |
 | `JOBBER_HUB_ID` | Single hub UUID |
 | `JOBBER_HUB_LABEL` | Name for that hub (default `default`) |
-| `JOBBER_HUBS` | JSON array of `{label, hubId}` for several providers |
+| `JOBBER_HUBS` | JSON array of `{label, hubId}` for several providers. Labels must be unique ignoring case (including the `JOBBER_HUB_ID` hub's label) |
 | `JOBBER_WS_PORT` | fetchproxy concentrator port (default `37149` — don't change it) |
 | `JOBBER_DEBUG_LOG` | Bridge debug logging to stderr |
 

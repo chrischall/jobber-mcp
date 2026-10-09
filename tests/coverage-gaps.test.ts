@@ -5,7 +5,13 @@ import { HubRegistry } from '../src/hubs.js';
 import { registerRecordTools } from '../src/tools/records.js';
 import { registerHealthcheckTools } from '../src/tools/healthcheck.js';
 import { VERSION } from '../src/version.js';
-import type { JobberTransport } from '../src/transport.js';
+import { JobberBridgeError, type JobberTransport } from '../src/transport.js';
+import { JobberFetchproxyTransport } from '../src/transport-fetchproxy.js';
+import {
+  bridgeErrorInfo,
+  FetchproxyBridgeDownError,
+  FetchproxyTimeoutError,
+} from '@chrischall/mcp-utils/fetchproxy';
 
 /**
  * The failure and edge paths the happy-path suites don't reach: misconfigured
@@ -220,10 +226,29 @@ describe('defaults that the injected-dependency tests never take', () => {
     expect(() => new HubRegistry()).not.toThrow();
   });
 
-  it('keeps the first entry when JOBBER_HUBS repeats a label', () => {
-    const dupe = `[{"label":"home","hubId":"${HUB}"},{"label":"home","hubId":"${HUB.replace(/4/g, '5')}"}]`;
+  it('collapses a repeated label that names the same hub', () => {
+    const dupe = `[{"label":"home","hubId":"${HUB}"},{"label":"Home","hubId":"${HUB.toUpperCase()}"}]`;
     const reg = new HubRegistry({ JOBBER_HUBS: dupe } as NodeJS.ProcessEnv);
     expect(reg.list()).toEqual([{ label: 'home', isDefault: true }]);
+  });
+
+  it('refuses a repeated label that names a different hub, ignoring case', () => {
+    // resolve() matches labels case-insensitively, so "QueenBee" and
+    // "queenbee" are the same selector: the second hub could never be picked.
+    // Silently dropping it hides a config mistake; say so instead.
+    const other = HUB.replace(/4/g, '5');
+    const dupe = `[{"label":"QueenBee","hubId":"${HUB}"},{"label":"queenbee","hubId":"${other}"}]`;
+    const reg = new HubRegistry({ JOBBER_HUBS: dupe } as NodeJS.ProcessEnv);
+    expect(() => reg.resolve()).toThrow(/label "queenbee" is used for two different hubs/i);
+  });
+
+  it('refuses a JOBBER_HUBS "Default" entry that clashes with JOBBER_HUB_ID', () => {
+    const other = HUB.replace(/4/g, '5');
+    const reg = new HubRegistry({
+      JOBBER_HUB_ID: HUB,
+      JOBBER_HUBS: `[{"label":"Default","hubId":"${other}"}]`,
+    } as NodeJS.ProcessEnv);
+    expect(() => reg.resolve()).toThrow(/two different hubs/);
   });
 
   it('reports malformed JOBBER_HUBS as a JSON problem, not a missing hub', () => {
@@ -299,5 +324,68 @@ describe('jobber_list_appointments with a populated schedule', () => {
     expect(data['count']).toBe(1);
     expect(data).not.toHaveProperty('note');
     await h.close();
+  });
+});
+
+describe('jobber_healthcheck when the hub fetch fails at the bridge layer', () => {
+  // The bridge's status() is a synchronous snapshot that does not throw when
+  // the extension is missing, so a bridge-down failure only surfaces from the
+  // hub fetch. It must still be blamed on the bridge, with the bridge's own
+  // remediation — not "re-open the hub link", which fixes nothing.
+  async function bridgeFailure(thrown: unknown) {
+    const bridge = {
+      start: async () => undefined,
+      fetch: async () => {
+        throw thrown;
+      },
+      status: () => ({ role: 'none', port: 37_149 }),
+    };
+    const client = new JobberClient({
+      transport: new JobberFetchproxyTransport({ bridge }),
+      hubs: new HubRegistry({ JOBBER_HUB_ID: HUB } as NodeJS.ProcessEnv),
+    });
+    const h = await createTestHarness((server) => registerHealthcheckTools(server, client));
+    const data = parseToolResult<Record<string, unknown>>(await h.callTool('jobber_healthcheck', {}));
+    await h.close();
+    return data;
+  }
+
+  it('reports the bridge layer with the bridge hint when the extension is down', async () => {
+    const cause = new FetchproxyBridgeDownError('bridge is down');
+    const data = await bridgeFailure(cause);
+    expect(data['ok']).toBe(false);
+    expect(data['layer']).toBe('bridge');
+    expect(String(data['hint'])).toBe(String(bridgeErrorInfo(cause).hint));
+    expect(String(data['hint'])).not.toMatch(/Re-open the hub link/);
+  });
+
+  it('reports a bridge timeout on the bridge layer too', async () => {
+    const data = await bridgeFailure(new FetchproxyTimeoutError('timed out'));
+    expect(data['layer']).toBe('bridge');
+    expect(String(data['hint'])).toMatch(/timed out/);
+  });
+
+  it('falls back to the generic bridge hint when the bridge error carries none', async () => {
+    const transport: JobberTransport = {
+      get: async () => {
+        throw new JobberBridgeError('bridge_down', 'Jobber bridge: gone');
+      },
+      status: async () => ({}),
+    };
+    const client = new JobberClient({
+      transport,
+      hubs: new HubRegistry({ JOBBER_HUB_ID: HUB } as NodeJS.ProcessEnv),
+    });
+    const h = await createTestHarness((server) => registerHealthcheckTools(server, client));
+    const data = parseToolResult<Record<string, unknown>>(await h.callTool('jobber_healthcheck', {}));
+    await h.close();
+    expect(data['layer']).toBe('bridge');
+    expect(data['error']).toBe('Jobber bridge: gone');
+    expect(String(data['hint'])).toMatch(/^ContextMint Bridge is not reachable/);
+  });
+
+  it('keeps an unclassified transport failure on the hub layer', async () => {
+    const data = await bridgeFailure(new Error('something odd'));
+    expect(data['layer']).toBe('hub');
   });
 });
