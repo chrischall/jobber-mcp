@@ -36,7 +36,9 @@
       "env": {
         "JOBBER_HUB_ID": "${user_config.hub_id}",
         "JOBBER_HUB_LABEL": "${user_config.hub_label}",
-        "JOBBER_HUBS": "${user_config.hubs_json}"
+        "JOBBER_HUBS": "${user_config.hubs_json}",
+        "JOBBER_WS_PORT": "${user_config.ws_port}",
+        "JOBBER_DEBUG_LOG": "${user_config.debug_log}"
       }
     }
   },
@@ -59,6 +61,18 @@
       "title": "Several Client Hubs (JSON)",
       "description": "Optional, for more than one provider: a JSON array like [{\"label\":\"queenbee\",\"hubId\":\"<UUID>\"},{\"label\":\"greenworx\",\"hubId\":\"<UUID>\"}]. Labels must be unique (ignoring case), including the hub above. Treat it like a password.",
       "sensitive": true,
+      "required": false
+    },
+    "ws_port": {
+      "type": "string",
+      "title": "fetchproxy port (advanced)",
+      "description": "fetchproxy concentrator port (default 37149 — don't change it).",
+      "required": false
+    },
+    "debug_log": {
+      "type": "string",
+      "title": "Debug logging",
+      "description": "Bridge debug logging to stderr. Any non-empty value turns it on; leave blank to keep it off.",
       "required": false
     }
   },
