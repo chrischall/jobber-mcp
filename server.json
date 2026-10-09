@@ -14,7 +14,58 @@
       "version": "1.0.6",
       "transport": {
         "type": "stdio"
-      }
+      },
+      "environmentVariables": [
+        {
+          "name": "JOBBER_HUB_ID",
+          "description": "Single hub UUID, from your hub URL: clienthub.getjobber.com/client_hubs/<UUID>/. Treat it like a password.",
+          "isRequired": false,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "JOBBER_HUB_LABEL",
+          "description": "Name for that hub (default `default`).",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "JOBBER_HUBS",
+          "description": "JSON array of {label, hubId} for several providers. Labels must be unique ignoring case (including the JOBBER_HUB_ID hub's label). Treat it like a password.",
+          "isRequired": false,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "JOBBER_WS_PORT",
+          "description": "fetchproxy concentrator port (default 37149 — don't change it).",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "JOBBER_DEBUG_LOG",
+          "description": "Bridge debug logging to stderr.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "FETCHPROXY_WS_HOST",
+          "description": "Bind interface for the fetchproxy concentrator (default 127.0.0.1; a literal IP only). For a hosted child in its own network namespace only — never bind a laptop's concentrator to the network.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        },
+        {
+          "name": "FETCHPROXY_IDENTITY_DIR",
+          "description": "Absolute path where fetchproxy stores its long-term identity keypair (default ~/.fetchproxy/identity/). For a host that runs a separate child per caller, so they share one identity.",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "string"
+        }
+      ]
     }
   ]
 }

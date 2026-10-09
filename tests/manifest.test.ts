@@ -64,3 +64,45 @@ describe('.mcpb manifest', () => {
     expect(registry.list().map((h) => h.label)).toEqual(['queenbee', 'greenworx']);
   });
 });
+
+describe('install surfaces declare the env the server reads', () => {
+  // src/hubs.ts reads the three hub keys; src/transport-fetchproxy.ts reads
+  // JOBBER_WS_PORT (readPortEnv) and JOBBER_DEBUG_LOG (the bridge debugEnvVar).
+  // An install path that does not declare a key leaves its users no way to
+  // set it.
+  const SERVER_KEYS = [
+    'JOBBER_DEBUG_LOG',
+    'JOBBER_HUBS',
+    'JOBBER_HUB_ID',
+    'JOBBER_HUB_LABEL',
+    'JOBBER_WS_PORT',
+  ];
+  const SECRET_KEYS = ['JOBBER_HUBS', 'JOBBER_HUB_ID'];
+  const serverJson = JSON.parse(readFileSync(join(root, 'server.json'), 'utf8')) as {
+    packages: {
+      environmentVariables?: { name: string; isRequired?: boolean; isSecret?: boolean }[];
+    }[];
+  };
+  const serverVars = serverJson.packages.flatMap((p) => p.environmentVariables ?? []);
+
+  it('wires each server key through manifest.json mcp_config.env', () => {
+    expect(Object.keys(env).sort()).toEqual(SERVER_KEYS);
+  });
+
+  it('backs every ${user_config.*} reference with an optional user_config entry', () => {
+    const refs = Object.values(env).flatMap((v) =>
+      [...v.matchAll(/\$\{user_config\.([^}]+)\}/g)].map((m) => m[1]!),
+    );
+    expect(refs.sort()).toEqual(Object.keys(userConfig).sort());
+    for (const k of refs) expect(userConfig[k]?.required, k).toBe(false);
+  });
+
+  it('declares each server key as optional in server.json, hub ids as secrets', () => {
+    for (const k of SERVER_KEYS) {
+      expect(serverVars.find((v) => v.name === k), k).toMatchObject({
+        isRequired: false,
+        isSecret: SECRET_KEYS.includes(k),
+      });
+    }
+  });
+});
