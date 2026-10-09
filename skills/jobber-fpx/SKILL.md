@@ -95,6 +95,22 @@ cards for everything else). The parser hides that split behind one interface.
 Ready-to-run recipes — next visit, unpaid invoices, totals, a single record —
 are in `references/recipes.md`.
 
+### Record `url`s are hub-relative
+
+Every record's `url` is relative to your hub — `appointments/2236612358`,
+`invoices/150208512` — because the hub UUID is a credential and stays out of
+the output. Prefix `$JOBBER_HUB/` to open or fetch one:
+
+```sh
+node "$PARSE" invoices < page.html | jq -r --arg base "$JOBBER_HUB/" '.[] | $base + .url'
+```
+
+> **Changed in 1.0.7 (output contract).** Earlier versions printed
+> `/client_hubs/<hub-uuid>/appointments/N` (and the same for invoice, quote and
+> work-request cards). A script that prefixed
+> `https://clienthub.getjobber.com` to `.url` must now prefix `$JOBBER_HUB/`
+> instead, or it builds a URL with no hub in it.
+
 ## Pass the right kind — the failure is silent otherwise
 
 `appointments` reads embedded JSON; the other three read HTML cards. Point the
