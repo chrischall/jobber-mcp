@@ -226,10 +226,29 @@ describe('defaults that the injected-dependency tests never take', () => {
     expect(() => new HubRegistry()).not.toThrow();
   });
 
-  it('keeps the first entry when JOBBER_HUBS repeats a label', () => {
-    const dupe = `[{"label":"home","hubId":"${HUB}"},{"label":"home","hubId":"${HUB.replace(/4/g, '5')}"}]`;
+  it('collapses a repeated label that names the same hub', () => {
+    const dupe = `[{"label":"home","hubId":"${HUB}"},{"label":"Home","hubId":"${HUB.toUpperCase()}"}]`;
     const reg = new HubRegistry({ JOBBER_HUBS: dupe } as NodeJS.ProcessEnv);
     expect(reg.list()).toEqual([{ label: 'home', isDefault: true }]);
+  });
+
+  it('refuses a repeated label that names a different hub, ignoring case', () => {
+    // resolve() matches labels case-insensitively, so "QueenBee" and
+    // "queenbee" are the same selector: the second hub could never be picked.
+    // Silently dropping it hides a config mistake; say so instead.
+    const other = HUB.replace(/4/g, '5');
+    const dupe = `[{"label":"QueenBee","hubId":"${HUB}"},{"label":"queenbee","hubId":"${other}"}]`;
+    const reg = new HubRegistry({ JOBBER_HUBS: dupe } as NodeJS.ProcessEnv);
+    expect(() => reg.resolve()).toThrow(/label "queenbee" is used for two different hubs/i);
+  });
+
+  it('refuses a JOBBER_HUBS "Default" entry that clashes with JOBBER_HUB_ID', () => {
+    const other = HUB.replace(/4/g, '5');
+    const reg = new HubRegistry({
+      JOBBER_HUB_ID: HUB,
+      JOBBER_HUBS: `[{"label":"Default","hubId":"${other}"}]`,
+    } as NodeJS.ProcessEnv);
+    expect(() => reg.resolve()).toThrow(/two different hubs/);
   });
 
   it('reports malformed JOBBER_HUBS as a JSON problem, not a missing hub', () => {

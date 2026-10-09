@@ -108,7 +108,19 @@ function loadHubs(env: NodeJS.ProcessEnv): Hub[] {
       if (!label || !hubId) {
         throw new Error('Every JOBBER_HUBS entry needs a "label" and a "hubId".');
       }
-      if (!hubs.some((h) => h.label === label)) hubs.push({ label, hubId });
+      // Case-insensitive, because resolve() is: a second "QueenBee" after
+      // "queenbee" could never be selected. The same hub twice is harmless;
+      // a different hub under the same label is a config mistake, so say so.
+      const clash = hubs.find((h) => h.label.toLowerCase() === label.toLowerCase());
+      if (!clash) {
+        hubs.push({ label, hubId });
+      } else if (clash.hubId.toLowerCase() !== hubId.toLowerCase()) {
+        throw new Error(
+          `Hub label "${label}" is used for two different hubs (labels are matched ` +
+            'ignoring case, and JOBBER_HUB_ID is labelled by JOBBER_HUB_LABEL or ' +
+            '"default"). Give each hub its own label.',
+        );
+      }
     }
   }
 
