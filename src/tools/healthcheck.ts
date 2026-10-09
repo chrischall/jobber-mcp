@@ -4,18 +4,7 @@ import type { JobberClient } from '../client.js';
 import { JobberBridgeError } from '../transport.js';
 import { z } from 'zod';
 
-/**
- * `jobber_healthcheck` — one call that separates the three things that can be
- * wrong, because their remedies are different and their symptoms are not:
- *
- *   1. the bridge is down          -> start Chrome / install the extension
- *   2. the bridge is up, hub 403s  -> the hub link expired or was revoked
- *   3. no hub configured at all    -> set JOBBER_HUB_ID
- *
- * It reports the real port from the running bridge rather than the default
- * literal, so a port override is visible here instead of being invisible until
- * every fetch fails.
- */
+/** Remediation when the bridge itself cannot be reached. */
 const BRIDGE_DOWN_HINT =
   'ContextMint Bridge is not reachable. Start Chrome with the ContextMint Bridge ' +
   'extension installed and its Site access allowing getjobber.com.';
@@ -34,6 +23,18 @@ const BRIDGE_LAYER_KINDS: ReadonlySet<string> = new Set([
   'capability_denied',
 ]);
 
+/**
+ * `jobber_healthcheck` — one call that separates the three things that can be
+ * wrong, because their remedies are different and their symptoms are not:
+ *
+ *   1. the bridge is down          -> start Chrome / install the extension
+ *   2. the bridge is up, hub 403s  -> the hub link expired or was revoked
+ *   3. no hub configured at all    -> set JOBBER_HUB_ID
+ *
+ * It reports the real port from the running bridge rather than the default
+ * literal, so a port override is visible here instead of being invisible until
+ * every fetch fails.
+ */
 export function registerHealthcheckTools(server: McpServer, client: JobberClient): void {
   server.registerTool(
     'jobber_healthcheck',
