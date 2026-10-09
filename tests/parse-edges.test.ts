@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { parseAppointments, parseCards, pageText } from '../src/parse.js';
+import { decodeEntities, parseAppointments, parseCards, pageText } from '../src/parse.js';
+
 
 /**
  * The malformed-page paths. A Client Hub page is reverse-engineered HTML with
@@ -90,5 +91,29 @@ describe('pageText', () => {
   it('falls back to the whole document when there is no body tag', () => {
     // Fragments come back from partial/XHR renders, which have no <body>.
     expect(pageText('<h1>Invoice 15313</h1><p>Due soon</p>')).toContain('Invoice 15313');
+  });
+});
+
+describe('decodeEntities — provider text beyond the basic five', () => {
+  it('decodes decimal and hex numeric references', () => {
+    expect(decodeEntities('Don&#8217;t pay &#36;120.00 &#x2014; or &#X41;')).toBe(
+      'Don\u2019t pay $120.00 \u2014 or A',
+    );
+  });
+
+  it('decodes the common typographic named entities', () => {
+    expect(
+      decodeEntities('&mdash;&ndash;&hellip;&rsquo;&lsquo;&rdquo;&ldquo;&apos;&copy;&reg;&trade;&bull;&middot;&deg;'),
+    ).toBe('\u2014\u2013\u2026\u2019\u2018\u201d\u201c\'\u00a9\u00ae\u2122\u2022\u00b7\u00b0');
+  });
+
+  it('decodes once: an escaped entity stays an entity', () => {
+    expect(decodeEntities('&amp;#36; &amp;mdash; &amp;amp;')).toBe('&#36; &mdash; &amp;');
+  });
+
+  it('leaves unknown names and out-of-range code points alone', () => {
+    expect(decodeEntities('&bogus; &constructor; &toString; &#0; &#x110000; &#99999999999;')).toBe(
+      '&bogus; &constructor; &toString; &#0; &#x110000; &#99999999999;',
+    );
   });
 });

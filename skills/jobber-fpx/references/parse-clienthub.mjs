@@ -15,15 +15,43 @@
 
 const KINDS = ['appointments', 'invoices', 'quotes', 'work_requests'];
 
+/**
+ * Named entities provider text actually carries. Not the full HTML table: the
+ * hub's own markup only escapes the basic five, and provider-authored notes
+ * add typographic punctuation. Anything else falls through as written.
+ */
+const NAMED_ENTITIES = new Map(Object.entries({
+  quot: '"',
+  apos: "'",
+  amp: '&',
+  lt: '<',
+  gt: '>',
+  nbsp: ' ',
+  mdash: '\u2014',
+  ndash: '\u2013',
+  hellip: '\u2026',
+  rsquo: '\u2019',
+  lsquo: '\u2018',
+  rdquo: '\u201d',
+  ldquo: '\u201c',
+  bull: '\u2022',
+  middot: '\u00b7',
+  copy: '\u00a9',
+  reg: '\u00ae',
+  trade: '\u2122',
+  deg: '\u00b0',
+}));
+
+/**
+ * One pass over every `&…;` reference, so a decoded `&amp;` can never be
+ * re-read as the start of another entity (`&amp;#36;` stays `&#36;`).
+ */
 function decodeEntities(s) {
-  return s
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&#x27;/g, "'")
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&'); // last: an escaped entity must not be re-decoded
+  return s.replace(/&(?:#(\d{1,7})|#[xX]([0-9a-fA-F]{1,6})|([a-zA-Z]+));/g, (whole, dec, hex, name) => {
+    if (name !== undefined) return NAMED_ENTITIES.get(name) ?? whole;
+    const code = dec !== undefined ? Number(dec) : parseInt(hex, 16);
+    return code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : whole;
+  });
 }
 
 function stripTags(html) {

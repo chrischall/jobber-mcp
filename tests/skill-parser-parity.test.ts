@@ -71,6 +71,16 @@ describe('skill parser parity with src/parse.ts', () => {
     }
   });
 
+  it('decodes provider-authored entities identically', () => {
+    const html =
+      '<h3>Awaiting&nbsp;response</h3><a class="card-content card-content--link" href="/client_hubs/UUID/quotes/9">' +
+      '<h4 class="card-headerTitle">Don&#8217;t forget &mdash; spring&#x2019;s visit</h4>' +
+      '<div class="columns">&#36;120.00 &amp;#36; &hellip; &bogus;</div></a>';
+    const ts = parseCards(html);
+    expect(ts[0]?.title).toBe('Don\u2019t forget \u2014 spring\u2019s visit');
+    expect(runSkill('quotes', html)).toEqual(ts);
+  });
+
   it('never prints the hub id in a record url', () => {
     // The hub UUID is a bearer credential; the TS parser rewrites links to
     // hub-relative paths, and the skill must too.
