@@ -21,7 +21,7 @@ import {
   type FetchproxyServerOpts,
 } from '@chrischall/mcp-utils/fetchproxy';
 import { readPortEnv } from '@chrischall/mcp-utils';
-import type { JobberTransport } from './transport.js';
+import { JobberBridgeError, type JobberTransport } from './transport.js';
 
 /**
  * The whole fetchproxy fleet shares ONE concentrator port — the ContextMint
@@ -106,7 +106,12 @@ export class JobberFetchproxyTransport implements JobberTransport {
       // Bridge-layer failures (extension down, pairing pending, timeout) carry
       // a typed remediation hint — surface it instead of a bare message.
       const info = bridgeErrorInfo(err);
-      throw new Error(`Jobber bridge: ${info.message}${info.hint ? ` ${info.hint}` : ''}`);
+      // Typed, so the healthcheck can tell a dead bridge from a hub fault.
+      throw new JobberBridgeError(
+        info.type,
+        `Jobber bridge: ${info.message}${info.hint ? ` ${info.hint}` : ''}`,
+        info.hint,
+      );
     }
   }
 

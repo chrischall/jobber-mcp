@@ -1,6 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/server';
 import { messageOf, minifiedResult } from '@chrischall/mcp-utils';
 import type { JobberClient } from '../client.js';
+import { JobberBridgeError } from '../transport.js';
 import { z } from 'zod';
 
 /**
@@ -15,6 +16,24 @@ import { z } from 'zod';
  * literal, so a port override is visible here instead of being invisible until
  * every fetch fails.
  */
+const BRIDGE_DOWN_HINT =
+  'ContextMint Bridge is not reachable. Start Chrome with the ContextMint Bridge ' +
+  'extension installed and its Site access allowing getjobber.com.';
+
+/**
+ * `bridgeErrorInfo` kinds that mean the request never reached the hub. `http`,
+ * `edge_blocked` and `unknown` stay on the hub layer: the bridge carried the
+ * request, or nothing says it did not.
+ */
+const BRIDGE_LAYER_KINDS: ReadonlySet<string> = new Set([
+  'bridge_down',
+  'session_not_ready',
+  'timeout',
+  'protocol',
+  'capability_unavailable',
+  'capability_denied',
+]);
+
 export function registerHealthcheckTools(server: McpServer, client: JobberClient): void {
   server.registerTool(
     'jobber_healthcheck',
@@ -41,9 +60,7 @@ export function registerHealthcheckTools(server: McpServer, client: JobberClient
           ok: false,
           layer: 'bridge',
           error: messageOf(err),
-          hint:
-            'ContextMint Bridge is not reachable. Start Chrome with the ContextMint Bridge ' +
-            'extension installed and its Site access allowing getjobber.com.',
+          hint: BRIDGE_DOWN_HINT,
         });
       }
 
@@ -70,6 +87,20 @@ export function registerHealthcheckTools(server: McpServer, client: JobberClient
         });
       } catch (err) {
         const error = messageOf(err);
+        // status() does not throw for a missing or unpaired extension, so a
+        // dead bridge surfaces here, from the fetch. Blame the bridge, with
+        // its own remediation, rather than telling the user to re-open a hub
+        // link that is fine.
+        if (err instanceof JobberBridgeError && BRIDGE_LAYER_KINDS.has(err.kind)) {
+          return minifiedResult({
+            ok: false,
+            layer: 'bridge',
+            elapsed_ms: Date.now() - start,
+            bridge,
+            error,
+            hint: err.hint ?? BRIDGE_DOWN_HINT,
+          });
+        }
         return minifiedResult({
           ok: false,
           layer: 'hub',
