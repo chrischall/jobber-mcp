@@ -26,7 +26,7 @@ Record shape:
   "duration": null,
   "location": "123 Elm St, ...",
   "confirmed": true,
-  "url": "/client_hubs/<uuid>/appointments/2236612358"
+  "url": "appointments/2236612358"  // hub-relative: the hub id never appears
 }
 ```
 
@@ -55,8 +55,7 @@ hub appointments | jq -r '.[] | select(.group=="Past") | "\(.date)\t\(.location)
 Absolute URL for one visit:
 
 ```sh
-hub appointments | jq -r --arg base https://clienthub.getjobber.com \
-  'first | $base + .url'
+hub appointments | jq -r --arg base "$JOBBER_HUB/" 'first | $base + .url'
 ```
 
 ## Invoices
@@ -70,7 +69,7 @@ Record shape:
   "title": "For Services Rendered",
   "number": "#15313",
   "details": ["Sent Mar 23, 2026 | Due Apr 07, 2026", "$135.00 & paid in full"],
-  "url": "/client_hubs/<uuid>/invoices/150208512"
+  "url": "invoices/150208512"       // hub-relative, like appointments
 }
 ```
 
@@ -130,7 +129,7 @@ Detail pages are HTML too, and their layout differs from the list cards. The
 parser targets lists; for one record, take the URL from the list and open it:
 
 ```sh
-hub invoices | jq -r --arg base https://clienthub.getjobber.com \
+hub invoices | jq -r --arg base "$JOBBER_HUB/" \
   '.[] | select(.number=="#15313") | $base + .url'
 ```
 

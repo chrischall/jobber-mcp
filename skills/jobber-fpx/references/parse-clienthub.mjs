@@ -45,22 +45,43 @@ function islandProps(html) {
   return out;
 }
 
+// Kept in step with src/parse.ts (tests/skill-parser-parity.test.ts runs this
+// script against the TypeScript parser): same fields, same nulls, same urls.
 function parseAppointments(html) {
-  const groups = islandProps(html).filter((p) => Array.isArray(p.appointments));
+  const groups = islandProps(html).filter((p) => p && Array.isArray(p.appointments));
   return groups.flatMap((g) =>
-    g.appointments.map((a) => ({
-      group: g.title ?? null, // "Today" | "Upcoming" | "Past"
-      id: idFromUrl(a.url),
-      date: a.date ?? null,
-      weekday: a.weekday ?? null,
-      time: a.canViewTime ? (a.time ?? null) : null,
-      arrivalWindow: a.arrivalWindow ?? null,
-      duration: a.duration ?? null,
-      location: a.location ?? null,
-      confirmed: a.confirmed ?? null,
-      url: a.url ?? null,
-    })),
+    g.appointments.map((a) => {
+      const url = str(a.url);
+      // Only an explicit `canViewTime: false` hides the time; absent means shown.
+      const canViewTime = a.canViewTime !== false;
+      return {
+        group: typeof g.title === 'string' ? g.title : null, // "Today" | "Upcoming" | "Past"
+        id: idFromUrl(url),
+        date: str(a.date),
+        weekday: str(a.weekday),
+        time: canViewTime ? str(a.time) : null,
+        arrivalWindow: str(a.arrivalWindow),
+        duration: str(a.duration),
+        location: str(a.location),
+        confirmed: typeof a.confirmed === 'boolean' ? a.confirmed : null,
+        url: hubRelativePath(url),
+      };
+    }),
   );
+}
+
+/** A non-empty string, else null — empty strings are absent values. */
+function str(v) {
+  return typeof v === 'string' && v.length > 0 ? v : null;
+}
+
+/**
+ * `/client_hubs/<uuid>/invoices/1` -> `invoices/1`. The hub UUID is a bearer
+ * credential, so it stays out of the output; prefix `$JOBBER_HUB/` to fetch.
+ */
+function hubRelativePath(url) {
+  if (!url) return null;
+  return url.replace(/^(?:https?:\/\/[^/]+)?\/client_hubs\/[^/?#]+\//, '');
 }
 
 function idFromUrl(url) {
@@ -109,7 +130,7 @@ function parseCards(html) {
       title,
       number,
       details,
-      url: href,
+      url: hubRelativePath(href),
     });
   }
 
