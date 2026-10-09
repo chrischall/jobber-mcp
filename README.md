@@ -85,6 +85,10 @@ Several providers, several hubs (there is no combined view):
 Then pass `hub: "greenworx"` to any tool. With one hub configured you never
 need the argument.
 
+Installed from the `.mcpb` bundle in Claude Desktop, the same three settings
+appear as **Client Hub ID**, **Client Hub label** and **Several Client Hubs
+(JSON)** — paste the JSON array above into the last one.
+
 | Variable | Meaning |
 | --- | --- |
 | `JOBBER_HUB_ID` | Single hub UUID |
