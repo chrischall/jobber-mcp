@@ -34,7 +34,9 @@
         "${__dirname}/dist/bundle.js"
       ],
       "env": {
-        "JOBBER_HUB_ID": "${user_config.hub_id}"
+        "JOBBER_HUB_ID": "${user_config.hub_id}",
+        "JOBBER_HUB_LABEL": "${user_config.hub_label}",
+        "JOBBER_HUBS": "${user_config.hubs_json}"
       }
     }
   },
@@ -43,6 +45,19 @@
       "type": "string",
       "title": "Client Hub ID",
       "description": "The UUID from your hub URL: clienthub.getjobber.com/client_hubs/<UUID>/ — find it in any email your provider sent you. Treat it like a password.",
+      "sensitive": true,
+      "required": false
+    },
+    "hub_label": {
+      "type": "string",
+      "title": "Client Hub label",
+      "description": "Optional name for the hub above, used to pick it when you have several providers (default: \"default\").",
+      "required": false
+    },
+    "hubs_json": {
+      "type": "string",
+      "title": "Several Client Hubs (JSON)",
+      "description": "Optional, for more than one provider: a JSON array like [{\"label\":\"queenbee\",\"hubId\":\"<UUID>\"},{\"label\":\"greenworx\",\"hubId\":\"<UUID>\"}]. Labels must be unique (ignoring case), including the hub above. Treat it like a password.",
       "sensitive": true,
       "required": false
     }
