@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.0.7](https://github.com/chrischall/jobber-mcp/compare/v1.0.6...v1.0.7) (2026-10-09)
+
+
+### Bug Fixes
+
+* annotate tools truthfully and sync manifests with the served tools ([#94](https://github.com/chrischall/jobber-mcp/issues/94)) ([d6f027f](https://github.com/chrischall/jobber-mcp/commit/d6f027f24ba3f5dce58de974ae63b49b2f161ccb))
+* declare the plugin MCP config under the mcpServers key Claude Code reads ([#95](https://github.com/chrischall/jobber-mcp/issues/95)) ([4322987](https://github.com/chrischall/jobber-mcp/commit/43229870ab1e37e7a1264b85bd8f6c0f87d5261a))
+* **deps:** update @chrischall/mcp-utils to 3.0.0 ([#93](https://github.com/chrischall/jobber-mcp/issues/93)) ([522b419](https://github.com/chrischall/jobber-mcp/commit/522b4198c88a6427b680b67a6bc00bc0f7010433))
+* **mcpb:** configure several Client Hubs from the Claude Desktop bundle ([#92](https://github.com/chrischall/jobber-mcp/issues/92)) ([9a038b6](https://github.com/chrischall/jobber-mcp/commit/9a038b6deeb81a2a396db793357658c9f0f6f4d7))
+* resolve low-severity audit findings ([#88](https://github.com/chrischall/jobber-mcp/issues/88)) ([8468a43](https://github.com/chrischall/jobber-mcp/commit/8468a431347775af78b29ce2bd4793c76de750f8))
+
+
+### Documentation
+
+* **skill:** fpx parser record urls are now hub-relative — prefix $JOBBER_HUB/ ([#91](https://github.com/chrischall/jobber-mcp/issues/91)) ([58ac0c2](https://github.com/chrischall/jobber-mcp/commit/58ac0c229dbd8dae2cc5e6fe60dbf6d8ef84df55))
+
 ## [1.0.6](https://github.com/chrischall/jobber-mcp/compare/v1.0.5...v1.0.6) (2026-10-07)
 
 
