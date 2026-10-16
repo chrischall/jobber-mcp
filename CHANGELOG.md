@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.8](https://github.com/chrischall/jobber-mcp/compare/v1.0.7...v1.0.8) (2026-10-16)
+
+
+### Bug Fixes
+
+* **deps:** bump @modelcontextprotocol/server ([#97](https://github.com/chrischall/jobber-mcp/issues/97)) ([83bb545](https://github.com/chrischall/jobber-mcp/commit/83bb545507535591172b020aeccd00bdb28f5da4))
+* **deps:** bump mcp-utils to 3.0.3 and fetchproxy to 3.6.2, and document mcp-host hosting ([#99](https://github.com/chrischall/jobber-mcp/issues/99)) ([5252f6a](https://github.com/chrischall/jobber-mcp/commit/5252f6a58c08effde7e251de4adc98913e5bd02e))
+
 ## [1.0.7](https://github.com/chrischall/jobber-mcp/compare/v1.0.6...v1.0.7) (2026-10-09)
 
 
