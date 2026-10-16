@@ -127,28 +127,22 @@ app that makes zero API calls to its own origin. `clienthub.getjobber.com/api/gr
 exists and answers introspection, but it serves the same staff schema as the
 Developer API — it is not a client-facing endpoint.
 
-## Why this is not hosted on mcp-host
+## Hosting on mcp-host
 
-Every other reason to run an MCP server rather than a shell script is about
-reach — using it from claude.ai, on a phone, anywhere the CLI is not. This
-server cannot deliver that, and the reason is structural rather than a
-missing afternoon of work.
+[`mcp-host`](https://github.com/chrischall/mcp-host) can run this server as a
+**bridged child**, which is how it reaches claude.ai and phones. The hub pages
+are still fetched by your own signed-in browser tab: the ContextMint Bridge
+extension pairs with the hosted child over the network, so the Cloudflare
+challenge sees your real browser, never the datacenter. Nothing replays a lifted
+cookie, which is why the `@fetchproxy/bootstrap` "lift the session once"
+pattern is deliberately not used here.
 
-[`mcp-host`](https://github.com/chrischall/mcp-host) runs children on a Fly
-machine. There is no browser there and no ContextMint Bridge extension, and a lifted
-cookie does not help: `cf_clearance` is bound to IP, User-Agent and TLS
-fingerprint together, so a session captured on a laptop is dead the moment a
-datacenter replays it. mcp-host's own
-[`docs/BROWSER-BRIDGE.md`](https://github.com/chrischall/mcp-host/blob/main/docs/BROWSER-BRIDGE.md)
-designs a path for exactly this class of server and states plainly that no
-hosting path is implemented yet.
-
-So this repo is built to be ready rather than hosted: the concentrator port
-comes from `JOBBER_WS_PORT` via `readPortEnv`, matching the twelve of thirteen
-browser-bridge MCPs that already do this, so a future host can attribute a
-socket to this child without a code change. It deliberately does **not** use the
-`@fetchproxy/bootstrap` "lift the session once" pattern, which is the one shape
-that cannot name a port at all.
+[`mint.yaml`](mint.yaml) carries what a registration needs: register it with
+`bridge: true` and give `JOBBER_WS_PORT` as the `bridgePortEnv` (the runner
+injects a per-registration concentrator port through it; locally it defaults to
+the fleet-shared 37149 via `readPortEnv`), keep `state.dataDir` so the bridge
+identity and pairing survive restarts, and leave egress empty, since the
+process itself never dials `getjobber.com`.
 
 ## Why there are no writes
 

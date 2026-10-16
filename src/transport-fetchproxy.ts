@@ -11,8 +11,6 @@
  * identical request from inside a real tab returns 200. There is no header set
  * and no replayed cookie that durably clears it — `cf_clearance` is bound to
  * IP, UA and TLS fingerprint together.
- *
- * That is also why this MCP is not hosted remotely: see the README.
  */
 import {
   bridgeErrorInfo,
@@ -20,7 +18,7 @@ import {
   type FetchproxyServer,
   type FetchproxyServerOpts,
 } from '@chrischall/mcp-utils/fetchproxy';
-import { readPortEnv } from '@chrischall/mcp-utils';
+import { memoizeAsync, readPortEnv, type AsyncMemo } from '@chrischall/mcp-utils';
 import { JobberBridgeError, type JobberTransport } from './transport.js';
 
 /**
@@ -55,7 +53,14 @@ export interface FetchproxyTransportOptions {
 
 export class JobberFetchproxyTransport implements JobberTransport {
   private readonly bridge: JobberBridge;
-  private startPromise: Promise<void> | undefined;
+  /**
+   * The bridge start, memoized under one key: concurrent and repeat callers
+   * share the first successful start, and a rejected start is evicted so the
+   * next call retries instead of sticking on the failure. `memoizeAsync`, not
+   * `singleFlight` — singleFlight clears on success too, which would re-run
+   * `start()` (re-listen, re-print the banner) on every request.
+   */
+  private readonly started: AsyncMemo<'bridge', void>;
 
   constructor(opts: FetchproxyTransportOptions = {}) {
     this.bridge =
@@ -75,20 +80,12 @@ export class JobberFetchproxyTransport implements JobberTransport {
         fetchTimeoutMs: opts.timeoutMs ?? 20_000,
         ...(opts.createServer ? { createServer: opts.createServer } : {}),
       }) as unknown as JobberBridge);
+    this.started = memoizeAsync(() => this.bridge.start());
   }
 
-  /**
-   * The bridge, started. Single-flight, and cleared on rejection so a
-   * transient failure retries on the next call instead of sticking forever.
-   */
+  /** The bridge, started (once; a failed start retries on the next call). */
   private async ready(): Promise<JobberBridge> {
-    if (!this.startPromise) {
-      this.startPromise = this.bridge.start().catch((err: unknown) => {
-        this.startPromise = undefined;
-        throw err;
-      });
-    }
-    await this.startPromise;
+    await this.started.get('bridge');
     return this.bridge;
   }
 

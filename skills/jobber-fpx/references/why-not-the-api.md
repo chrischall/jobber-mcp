@@ -68,7 +68,8 @@ Two consequences worth stating plainly:
   reads as though someone verified that it did.
 - **A lifted cookie will not travel.** `cf_clearance` is bound to IP, UA and
   TLS fingerprint, so a cookie captured on a laptop is dead when replayed from
-  a server — which is why the matching MCP cannot be hosted remotely today.
+  a server. That is why the hosted MCP still fetches through your own tab over
+  the bridge rather than replaying a captured session.
 
 ## If you *are* the business
 

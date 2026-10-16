@@ -148,7 +148,7 @@ describe('JobberFetchproxyTransport — get', () => {
   });
 
   it('appends the remediation hint when the bridge error carries one', async () => {
-    const cause = new FetchproxyBridgeDownError('bridge is down');
+    const cause = new FetchproxyBridgeDownError({ originalError: 'bridge is down' });
     const bridge = fakeBridge({ fetch: vi.fn().mockRejectedValue(cause) } as never);
     const t = new JobberFetchproxyTransport({ bridge });
 
