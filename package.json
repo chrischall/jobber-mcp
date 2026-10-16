@@ -51,14 +51,14 @@
     "build": "tsc && npm run bundle",
     "bundle": "node scripts/bundle.mjs",
     "dev": "node dist/index.js",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.test.json",
     "test": "npm run typecheck && vitest run",
     "test:coverage": "npm run typecheck && vitest run --coverage",
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@chrischall/mcp-utils": "^3.0.0",
-    "@fetchproxy/server": "^3.6.0",
+    "@chrischall/mcp-utils": "^3.0.3",
+    "@fetchproxy/server": "^3.6.2",
     "@modelcontextprotocol/server": "^2.3.0",
     "zod": "^4.6.5"
   },

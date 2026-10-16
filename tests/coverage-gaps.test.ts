@@ -351,7 +351,7 @@ describe('jobber_healthcheck when the hub fetch fails at the bridge layer', () =
   }
 
   it('reports the bridge layer with the bridge hint when the extension is down', async () => {
-    const cause = new FetchproxyBridgeDownError('bridge is down');
+    const cause = new FetchproxyBridgeDownError({ originalError: 'bridge is down' });
     const data = await bridgeFailure(cause);
     expect(data['ok']).toBe(false);
     expect(data['layer']).toBe('bridge');
@@ -360,7 +360,7 @@ describe('jobber_healthcheck when the hub fetch fails at the bridge layer', () =
   });
 
   it('reports a bridge timeout on the bridge layer too', async () => {
-    const data = await bridgeFailure(new FetchproxyTimeoutError('timed out'));
+    const data = await bridgeFailure(new FetchproxyTimeoutError({ url: 'https://api.getjobber.com/api/graphql', timeoutMs: 30_000 }));
     expect(data['layer']).toBe('bridge');
     expect(String(data['hint'])).toMatch(/timed out/);
   });
