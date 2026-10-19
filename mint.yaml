@@ -55,3 +55,12 @@ egress:
   # is no direct / bootstrap / anonymous path — the README explains why the
   # Cloudflare challenge rules one out. Nothing is discovered at runtime.
   allow: []
+examples:
+  # Sample prompts for the public catalog. Every one maps to a real read-only
+  # tool: jobber_list_appointments, jobber_list_invoices, jobber_list_quotes.
+  - prompt: When is my lawn service coming next, and what's the arrival window?
+    note: Reads scheduled visits from the provider's Client Hub.
+  - prompt: Do I have any unpaid or overdue invoices from my cleaning company?
+    note: Lists invoices by section (Paid, Overdue, …); it cannot pay them.
+  - prompt: Summarize the quotes my landscaper has sent me and which are still awaiting approval.
+    note: Read-only — approving a quote is not possible here.
