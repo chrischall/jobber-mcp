@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.9](https://github.com/chrischall/jobber-mcp/compare/v1.0.8...v1.0.9) (2026-10-25)
+
+
+### Bug Fixes
+
+* **deps:** bump the production-dependencies group with 2 updates ([#107](https://github.com/chrischall/jobber-mcp/issues/107)) ([c6632c9](https://github.com/chrischall/jobber-mcp/commit/c6632c92b2a74e3bb4755bbd980fe0655481e8be))
+
+
+### Documentation
+
+* **mint:** add sample prompts for the public catalog ([#104](https://github.com/chrischall/jobber-mcp/issues/104)) ([e20dd3a](https://github.com/chrischall/jobber-mcp/commit/e20dd3aa7218d8cfa7426a41fe9c96345e9dc778))
+
 ## [1.0.8](https://github.com/chrischall/jobber-mcp/compare/v1.0.7...v1.0.8) (2026-10-16)
 
 
