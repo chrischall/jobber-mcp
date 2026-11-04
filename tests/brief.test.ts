@@ -85,3 +85,24 @@ describe('visits', () => {
     expect(line).toMatch(/… — 2026-06-28 — upcoming$/);
   });
 });
+
+describe('the fleet brief-line contract', () => {
+  it('escapes a title that starts with "-- " or "\\" with one leading backslash', () => {
+    expect(invoiceLine(card({ title: '-- none' }))).toBe('\\-- none — no date — open');
+    expect(invoiceLine(card({ title: '\\x' }))).toBe('\\\\x — no date — open');
+    expect(invoiceLine(card({ title: '--x' }))).toBe('--x — no date — open');
+  });
+
+  it('cuts the line as a WHOLE to the cap, title first, when the status alone is long', () => {
+    const line = invoiceLine(card({ title: 'Spring treatment', section: 'S'.repeat(200) }));
+    expect(line.length).toBeLessThanOrEqual(BRIEF_MAX);
+    expect(line.startsWith('Spring treatment')).toBe(true);
+    expect(line).toMatch(/ — no date — s+…$/);
+  });
+
+  it('shortens the title before the status when both are long', () => {
+    const line = invoiceLine(card({ title: 'T'.repeat(200), section: 's'.repeat(60) }));
+    expect(line.length).toBe(BRIEF_MAX);
+    expect(line).toMatch(/^T+… — no date — s{60}$/);
+  });
+});

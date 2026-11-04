@@ -45,11 +45,33 @@ export function inRange(appointments: Appointment[], start?: string, end?: strin
   });
 }
 
-function line(title: string, date: string | null, status: string): string {
-  const tail = ` — ${date ?? 'no date'} — ${status}`;
-  const room = BRIEF_MAX - tail.length;
-  const shown = title.length > room ? `${title.slice(0, Math.max(room - 1, 0))}…` : title;
-  return `${shown}${tail}`;
+/** The shortest a title is cut to before the status gives way too. */
+const TITLE_FLOOR = 24;
+
+const cut = (s: string, n: number): string => (s.length > n ? `${s.slice(0, Math.max(n - 1, 0))}…` : s);
+
+/**
+ * One brief line, cut to ≤ {@link BRIEF_MAX} chars as a WHOLE, title first:
+ * the title shortens until the line fits, and only once it is at its floor
+ * does the status give way too. A title starting with `-- ` (which would read
+ * as a note) or `\` (which a host strips one of) is escaped with one leading
+ * backslash — the fleet brief-view contract.
+ */
+function line(rawTitle: string, date: string | null, status: string): string {
+  const title = rawTitle.startsWith('-- ') || rawTitle.startsWith('\\') ? `\\${rawTitle}` : rawTitle;
+  const sep = ` — ${date ?? 'no date'} — `;
+  const room = BRIEF_MAX - sep.length;
+  if (title.length + status.length <= room) return `${title}${sep}${status}`;
+  const shown = cut(title, Math.max(room - status.length, Math.min(title.length, TITLE_FLOOR)));
+  return `${shown}${sep}${cut(status, room - shown.length)}`;
+}
+
+/** The note line an empty brief answers, so a host reads "nothing" rather than no answer. */
+export const BRIEF_NONE = '-- none';
+
+/** The brief lines, or the single `-- none` note when there is nothing to list. */
+export function briefLines(lines: string[]): string[] {
+  return lines.length === 0 ? [BRIEF_NONE] : lines;
 }
 
 /** `Visit 9:00am at 123 Elm St — 2026-06-28 — upcoming` (status: the hub's group, plus `confirmed`). */
