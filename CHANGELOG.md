@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/chrischall/jobber-mcp/compare/v1.1.0...v1.1.1) (2026-11-04)
+
+
+### Bug Fixes
+
+* **brief:** align the brief view with the fleet contract ([#113](https://github.com/chrischall/jobber-mcp/issues/113)) ([a70caa5](https://github.com/chrischall/jobber-mcp/commit/a70caa5e142fdfb4c887963c2e43628236802c40))
+
 ## [1.1.0](https://github.com/chrischall/jobber-mcp/compare/v1.0.8...v1.1.0) (2026-11-04)
 
 
