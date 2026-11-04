@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.1.0](https://github.com/chrischall/jobber-mcp/compare/v1.0.8...v1.1.0) (2026-11-04)
+
+
+### Features
+
+* context-group hints, a brief view and date range on visits and invoices, a hub-label subject enum ([#110](https://github.com/chrischall/jobber-mcp/issues/110)) ([ddfd15f](https://github.com/chrischall/jobber-mcp/commit/ddfd15f6d4d1607a11c81cee5697ff6be77642f9))
+
+
+### Bug Fixes
+
+* **deps:** bump the production-dependencies group with 2 updates ([#107](https://github.com/chrischall/jobber-mcp/issues/107)) ([c6632c9](https://github.com/chrischall/jobber-mcp/commit/c6632c92b2a74e3bb4755bbd980fe0655481e8be))
+* **deps:** bump the production-dependencies group with 2 updates ([#109](https://github.com/chrischall/jobber-mcp/issues/109)) ([a1b54f2](https://github.com/chrischall/jobber-mcp/commit/a1b54f28b62b5469f39efa6bab3e61579f0da48a))
+* **invoices:** fence brief invoice lines in the untrusted-data envelope ([#112](https://github.com/chrischall/jobber-mcp/issues/112)) ([436a2af](https://github.com/chrischall/jobber-mcp/commit/436a2af21797920a58564dd7244be15f2957d1b1)), closes [#111](https://github.com/chrischall/jobber-mcp/issues/111)
+
+
+### Documentation
+
+* **mint:** add sample prompts for the public catalog ([#104](https://github.com/chrischall/jobber-mcp/issues/104)) ([e20dd3a](https://github.com/chrischall/jobber-mcp/commit/e20dd3aa7218d8cfa7426a41fe9c96345e9dc778))
+
 ## [1.0.8](https://github.com/chrischall/jobber-mcp/compare/v1.0.7...v1.0.8) (2026-10-16)
 
 
