@@ -8,7 +8,7 @@ import {
 } from '@chrischall/mcp-utils';
 import type { CardPage, JobberClient } from '../client.js';
 import type { CardRecord } from '../parse.js';
-import { appointmentLine, inRange, invoiceLine, isOpenInvoice } from '../brief.js';
+import { appointmentLine, briefLines, inRange, invoiceLine, isOpenInvoice } from '../brief.js';
 import { homeMeta, type MintHint } from './hints.js';
 
 /**
@@ -42,9 +42,9 @@ const ISO_DAY = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/, 'a YYYY-MM-DD date');
 
-/** One line per item, or no text at all when there is none (a host then counts zero items). */
+/** One line per item, or the single `-- none` note when there is none. */
 function briefResult(lines: string[]) {
-  return { content: [{ type: 'text' as const, text: lines.join('\n') }] };
+  return { content: [{ type: 'text' as const, text: briefLines(lines).join('\n') }] };
 }
 
 /**
@@ -52,11 +52,11 @@ function briefResult(lines: string[]) {
  * answer inside the untrusted-data envelope as `data: string[]` —
  * `{ untrusted_content, note, data }`, markers first — exactly as the full
  * view of the same tool is fenced; a host composing a group answer (mcp-host's
- * intent tools) unwraps the envelope and takes `data` as the lines. No lines
- * means no provider text, so an empty brief stays empty (zero items).
+ * intent tools) unwraps the envelope and takes `data` as the lines. An empty
+ * list answers the `-- none` note inside `data`, so the shape never changes.
  */
 function untrustedBriefResult(lines: string[]) {
-  return lines.length === 0 ? briefResult(lines) : untrustedResult(lines, { note: UNTRUSTED_BRIEF_NOTE });
+  return untrustedResult(briefLines(lines), { note: UNTRUSTED_BRIEF_NOTE });
 }
 
 /**

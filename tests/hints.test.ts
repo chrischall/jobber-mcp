@@ -219,13 +219,15 @@ describe("view: 'brief'", () => {
     }
   });
 
-  it('answers zero lines when there is nothing to list, so a host counts no items', async () => {
+  it('answers the single note line "-- none" when there is nothing to list', async () => {
     const { h } = await harness();
     const visits = text(await h.callTool('jobber_list_appointments', { view: 'brief' }));
     const invoices = text(await h.callTool('jobber_list_invoices', { view: 'brief' }));
     await h.close();
-    expect(visits).toBe('');
-    // No invoice means no provider text, so there is nothing to fence.
-    expect(invoices).toBe('');
+    expect(visits).toBe('-- none');
+    // The invoice brief always answers in the envelope, so the note rides in its data.
+    expect(invoices.startsWith('{"untrusted_content":true,"note":')).toBe(true);
+    expect((JSON.parse(invoices) as { data: string[] }).data).toEqual(['-- none']);
   });
+
 });
