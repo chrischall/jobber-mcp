@@ -152,3 +152,22 @@ Read-only, by design and by capability:
   so these URLs can only be *resolved* for you to open, never fetched.
 - **No payments.** Paying an invoice means entering card or bank details. Never
   automate that — open the hub and do it yourself.
+
+## In context groups
+
+The jobber-mcp server (not this skill) joins the **home** context group on an
+mcp-host that publishes groups. Its tools carry `_meta.mint` hints; the
+group's intent tools call its canonical reads for you:
+
+- **what's on** → `jobber_list_appointments`, per hub, over the asked range
+  (`start`/`end`), in `view: 'brief'` (`Visit 9:00am at <address> — 2026-06-28 — upcoming`).
+- **what's due** → `jobber_list_invoices`, per hub, in `view: 'brief'`: the
+  invoices still owed (every section but Paid) with their due date.
+- **Subjects** are the configured hub labels (`JOBBER_HUB_LABEL` /
+  `JOBBER_HUBS`), one per provider; hub ids are never published.
+
+A compound ask reads across the group: "any visits at the house this week —
+and anything I owe the pest company?" answers both reads for each hub. The
+server reaches the hub through the browser bridge, so when Chrome is closed or
+the extension is not paired the group says Jobber **needs your browser open**
+rather than answering "nothing".

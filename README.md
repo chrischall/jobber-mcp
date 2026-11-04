@@ -101,8 +101,8 @@ appear as **Client Hub ID**, **Client Hub label** and **Several Client Hubs
 
 | Tool | Returns |
 | --- | --- |
-| `jobber_list_appointments` | Visits, grouped Today / Upcoming / Past |
-| `jobber_list_invoices` | Invoices with number, subject and section (`Paid`, `Overdue`, …) |
+| `jobber_list_appointments` | Visits, grouped Today / Upcoming / Past; optional `start`/`end` date range and `view: brief` |
+| `jobber_list_invoices` | Invoices with number, subject and section (`Paid`, `Overdue`, …); `view: brief` lists the ones still owed |
 | `jobber_list_quotes` | Quotes with their approval section |
 | `jobber_list_work_requests` | Requests you raised |
 | `jobber_read_page` | Readable text of an appointments, invoices, quotes or work-requests page, including detail pages |

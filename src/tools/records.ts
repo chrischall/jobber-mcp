@@ -7,12 +7,45 @@ import {
   untrustedResult,
 } from '@chrischall/mcp-utils';
 import type { CardPage, JobberClient } from '../client.js';
+import type { CardRecord } from '../parse.js';
+import { appointmentLine, inRange, invoiceLine, isOpenInvoice } from '../brief.js';
+import { homeMeta, type MintHint } from './hints.js';
 
-const hubArg = z
+/**
+ * The `hub` argument. With hubs configured it publishes their LABELS as a JSON
+ * Schema `enum`, so a host that groups tools by subject (the mcp-host context
+ * groups) can fan a question out over each provider without listing anything
+ * itself. The labels come from this server's own configuration — no request
+ * is made, so building the enum cannot hold the boot — and a hub id never
+ * appears in it: ids are credentials. With none configured (or a config
+ * error) the property has no enum, never an empty one. `.meta({ enum })`
+ * publishes the labels without making zod refuse other values, so a label in
+ * any case, or a raw hub id, still resolves through `HubRegistry.resolve`.
+ */
+function hubArgFor(labels: readonly string[]) {
+  const arg = z
+    .string()
+    .min(1)
+    .describe('Which provider hub to read, by label. Omit when only one is configured.');
+  return (labels.length > 0 ? arg.meta({ enum: [...labels] }) : arg).optional();
+}
+
+/** `view`, on the two canonical reads. */
+function viewArg(brief: string) {
+  return z
+    .enum(['full', 'brief'])
+    .optional()
+    .describe(`"full" (default) returns the records; "brief" returns one line per ${brief}.`);
+}
+
+const ISO_DAY = z
   .string()
-  .min(1)
-  .optional()
-  .describe('Which provider hub to read, by label. Omit when only one is configured.');
+  .regex(/^\d{4}-\d{2}-\d{2}$/, 'a YYYY-MM-DD date');
+
+/** One line per item, or no text at all when there is none (a host then counts zero items). */
+function briefResult(lines: string[]) {
+  return { content: [{ type: 'text' as const, text: lines.join('\n') }] };
+}
 
 /**
  * The only hub routes jobber_read_page may fetch: the four read families, each
@@ -46,22 +79,36 @@ function emptyNote(kind: string): string {
 }
 
 export function registerRecordTools(server: McpServer, client: JobberClient): void {
+  const hubArg = hubArgFor(client.hubs.list().map((h) => h.label));
+
   server.registerTool(
     'jobber_list_appointments',
     {
       title: 'List scheduled visits',
       description:
-        "Scheduled visits from a provider's Jobber Client Hub, grouped Today / Upcoming / Past. Each visit carries date, weekday, time, arrival window, location and confirmation state. `time` is null when the provider chooses not to show times. Read-only.",
+        "Scheduled visits from a provider's Jobber Client Hub, grouped Today / Upcoming / Past. Each visit carries date, weekday, time, arrival window, location and confirmation state. `time` is null when the provider chooses not to show times. `start`/`end` keep only visits dated in that inclusive range. Read-only.",
       annotations: {
         title: 'List scheduled visits',
         readOnlyHint: true,
         idempotentHint: true,
         openWorldHint: true,
       },
-      inputSchema: z.object({ hub: hubArg }),
+      _meta: homeMeta('whats-on', {
+        canonical: true,
+        subject: 'hub',
+        when: { start: 'start', end: 'end' },
+        aliases: ['visit', 'appointment', 'service visit', 'technician', 'pest control', 'lawn care'],
+      }),
+      inputSchema: z.object({
+        hub: hubArg,
+        start: ISO_DAY.optional().describe('Earliest visit date to include, YYYY-MM-DD (inclusive).'),
+        end: ISO_DAY.optional().describe('Latest visit date to include, YYYY-MM-DD (inclusive).'),
+        view: viewArg('visit: title — <ISO date or "no date"> — <today|upcoming|past>[, confirmed]'),
+      }),
     },
-    async ({ hub }) => {
-      const appointments = await client.listAppointments(hub);
+    async ({ hub, start, end, view }) => {
+      const appointments = inRange(await client.listAppointments(hub), start, end);
+      if (view === 'brief') return briefResult(appointments.map(appointmentLine));
       return minifiedResult({
         count: appointments.length,
         appointments,
@@ -70,26 +117,38 @@ export function registerRecordTools(server: McpServer, client: JobberClient): vo
     },
   );
 
-  registerCardTool(server, client, {
+  registerCardTool(server, client, hubArg, {
     name: 'jobber_list_invoices',
     page: 'invoices',
     title: 'List invoices',
+    meta: homeMeta('whats-due', {
+      canonical: true,
+      subject: 'hub',
+      aliases: ['bill', 'invoice', 'owe', 'payment due', 'balance'],
+    }),
+    brief: {
+      what: 'invoice still owed (every section but Paid): <number> <subject> — <due ISO date or "no date"> — <section>',
+      keep: isOpenInvoice,
+      line: invoiceLine,
+    },
     description:
       "Invoices a provider has sent through Jobber. Each carries its number, subject, the list section it sits under (`Paid`, `Overdue`, …) and the provider's own metadata rows verbatim in `details` — amounts and dates live there, kept raw because which rows appear depends on invoice state. Read-only; this cannot pay anything.",
   });
 
-  registerCardTool(server, client, {
+  registerCardTool(server, client, hubArg, {
     name: 'jobber_list_quotes',
     page: 'quotes',
     title: 'List quotes',
+    meta: homeMeta('lookup', { subject: 'hub', aliases: ['quote', 'estimate'] }),
     description:
       'Quotes a provider has sent through Jobber, with number, subject, section (approval state) and the raw metadata rows. Read-only — approving a quote is not possible through this server.',
   });
 
-  registerCardTool(server, client, {
+  registerCardTool(server, client, hubArg, {
     name: 'jobber_list_work_requests',
     page: 'work_requests',
     title: 'List work requests',
+    meta: homeMeta('lookup', { subject: 'hub', aliases: ['service request', 'work request'] }),
     description:
       'Work requests you have raised with a provider through their Jobber Client Hub, with their current section (state) and metadata rows. Read-only.',
   });
@@ -107,6 +166,7 @@ export function registerRecordTools(server: McpServer, client: JobberClient): vo
         idempotentHint: true,
         openWorldHint: true,
       },
+      _meta: homeMeta('lookup', { subject: 'hub' }),
       inputSchema: z.object({
         path: z
           .string()
@@ -150,6 +210,7 @@ export function registerRecordTools(server: McpServer, client: JobberClient): vo
         idempotentHint: true,
         openWorldHint: false,
       },
+      _meta: homeMeta('lookup', { aliases: ['service providers', 'my providers'] }),
       inputSchema: z.object({}),
     },
     async () => {
@@ -170,8 +231,18 @@ export function registerRecordTools(server: McpServer, client: JobberClient): vo
 function registerCardTool(
   server: McpServer,
   client: JobberClient,
-  opts: { name: string; page: CardPage; title: string; description: string },
+  hubArg: ReturnType<typeof hubArgFor>,
+  opts: {
+    name: string;
+    page: CardPage;
+    title: string;
+    description: string;
+    meta: { mint: MintHint };
+    /** A `view: 'brief'` for this list: which records it keeps and how each reads as one line. */
+    brief?: { what: string; keep: (r: CardRecord) => boolean; line: (r: CardRecord) => string };
+  },
 ): void {
+  const { brief } = opts;
   server.registerTool(
     opts.name,
     {
@@ -183,10 +254,15 @@ function registerCardTool(
         idempotentHint: true,
         openWorldHint: true,
       },
-      inputSchema: z.object({ hub: hubArg }),
+      _meta: opts.meta,
+      // `view` only where there is a brief to serve; the rest keep `{ hub }`.
+      inputSchema: z.object({ hub: hubArg, view: viewArg(brief?.what ?? '') }).pick(
+        brief ? { hub: true, view: true } : { hub: true },
+      ),
     },
-    async ({ hub }) => {
+    async ({ hub, view }: { hub?: string; view?: 'full' | 'brief' }) => {
       const records = await client.listCards(opts.page, hub);
+      if (brief && view === 'brief') return briefResult(records.filter(brief.keep).map(brief.line));
       // No records means no provider text to fence, and the empty-result
       // note keeps its usual `note` slot.
       if (records.length === 0) {
