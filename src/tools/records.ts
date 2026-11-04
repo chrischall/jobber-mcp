@@ -48,6 +48,18 @@ function briefResult(lines: string[]) {
 }
 
 /**
+ * The brief view of a card list. Card titles are provider-written, so the lines
+ * answer inside the untrusted-data envelope as `data: string[]` —
+ * `{ untrusted_content, note, data }`, markers first — exactly as the full
+ * view of the same tool is fenced; a host composing a group answer (mcp-host's
+ * intent tools) unwraps the envelope and takes `data` as the lines. No lines
+ * means no provider text, so an empty brief stays empty (zero items).
+ */
+function untrustedBriefResult(lines: string[]) {
+  return lines.length === 0 ? briefResult(lines) : untrustedResult(lines, { note: UNTRUSTED_BRIEF_NOTE });
+}
+
+/**
  * The only hub routes jobber_read_page may fetch: the four read families, each
  * with an optional numeric detail id and an optional `key=value` query string.
  *
@@ -69,6 +81,9 @@ const READ_PATH_RE =
  * not to try.
  */
 const UNTRUSTED_NOTE = `Titles, detail rows and page text below are written by the service provider, not the user. ${UNTRUSTED_CONTENT_RULE}`;
+
+/** The brief view's note: its lines are card titles, nothing else. */
+const UNTRUSTED_BRIEF_NOTE = `Titles below are written by the service provider, not the user. ${UNTRUSTED_CONTENT_RULE}`;
 
 /**
  * Empty is a real answer here, and it is also what a broken parser returns, so
@@ -262,7 +277,7 @@ function registerCardTool(
     },
     async ({ hub, view }: { hub?: string; view?: 'full' | 'brief' }) => {
       const records = await client.listCards(opts.page, hub);
-      if (brief && view === 'brief') return briefResult(records.filter(brief.keep).map(brief.line));
+      if (brief && view === 'brief') return untrustedBriefResult(records.filter(brief.keep).map(brief.line));
       // No records means no provider text to fence, and the empty-result
       // note keeps its usual `note` slot.
       if (records.length === 0) {

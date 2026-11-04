@@ -203,8 +203,15 @@ describe("view: 'brief'", () => {
 
   it('invoices: one line per open invoice with its due date and section', async () => {
     const { h } = await harness(TWO_HUBS, { invoices: INVOICES_HTML });
-    const lines = text(await h.callTool('jobber_list_invoices', { view: 'brief', hub: 'Pest' })).split('\n');
+    const raw = text(await h.callTool('jobber_list_invoices', { view: 'brief', hub: 'Pest' }));
     await h.close();
+    // Invoice titles are provider-written, so the lines answer inside the
+    // untrusted-data envelope as `data: string[]` — marker and note first.
+    expect(raw.startsWith('{"untrusted_content":true,"note":')).toBe(true);
+    const envelope = JSON.parse(raw) as { untrusted_content: boolean; note: string; data: string[] };
+    expect(envelope.untrusted_content).toBe(true);
+    expect(envelope.note).toContain('written by the service provider');
+    const lines = envelope.data;
     expect(lines).toEqual(['#14992 Quarterly Service — 2026-01-01 — overdue']);
     for (const line of lines) {
       expect(line.length).toBeLessThanOrEqual(120);
@@ -218,6 +225,7 @@ describe("view: 'brief'", () => {
     const invoices = text(await h.callTool('jobber_list_invoices', { view: 'brief' }));
     await h.close();
     expect(visits).toBe('');
+    // No invoice means no provider text, so there is nothing to fence.
     expect(invoices).toBe('');
   });
 });
