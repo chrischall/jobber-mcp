@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/chrischall/jobber-mcp/compare/v1.1.1...v1.1.2) (2026-11-08)
+
+
+### Bug Fixes
+
+* **deps:** bump @chrischall/mcp-utils ([#116](https://github.com/chrischall/jobber-mcp/issues/116)) ([3d391b7](https://github.com/chrischall/jobber-mcp/commit/3d391b74da06f4e380f245ebbefc98b769129967))
+
 ## [1.1.1](https://github.com/chrischall/jobber-mcp/compare/v1.1.0...v1.1.1) (2026-11-04)
 
 
