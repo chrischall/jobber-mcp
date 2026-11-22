@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.2](https://github.com/chrischall/jobber-mcp/compare/v1.1.1...v1.1.2) (2026-11-22)
+
+
+### Bug Fixes
+
+* **deps:** bump @chrischall/mcp-utils ([#116](https://github.com/chrischall/jobber-mcp/issues/116)) ([3d391b7](https://github.com/chrischall/jobber-mcp/commit/3d391b74da06f4e380f245ebbefc98b769129967))
+* **deps:** bump @chrischall/mcp-utils ([#120](https://github.com/chrischall/jobber-mcp/issues/120)) ([5735f60](https://github.com/chrischall/jobber-mcp/commit/5735f603d33423a9a60a970effa337c6e01e2492))
+* **deps:** bump the production-dependencies group with 2 updates ([#118](https://github.com/chrischall/jobber-mcp/issues/118)) ([e5e41b3](https://github.com/chrischall/jobber-mcp/commit/e5e41b363921955ba72f01c93fb93f0211afa778))
+
 ## [1.1.1](https://github.com/chrischall/jobber-mcp/compare/v1.1.0...v1.1.1) (2026-11-04)
 
 
